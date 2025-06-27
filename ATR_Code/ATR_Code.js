@@ -12,6 +12,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const cli = document.getElementById("cli");
   const tempRef = db.collection("meta").doc("temperature");
   const broadcastRef = db.collection("meta").doc("broadcast");
+  const goldRef = db.collection("meta").doc("gold");
+  const shopRef = db.collection("shop");
   let cache = { notes: [], inventory: [] };
 
   // 🧾 Utility Functions
@@ -56,11 +58,15 @@ document.addEventListener("DOMContentLoaded", () => {
     weather            → Show current temperature
     radio              → Listen to the current broadcast
     clear              → Clear screen
+    bank [+/-amount]   → Manage gold reserves
+    shop               → List shop items
+    buy [item name]    → Purchase an item from the shop
     exit               → Seal the Archive`,
 
     "dm help": () => `DM Commands:
     dm temp [text]     → Set the current temperature
     dm broadcast [text] → Set the radio transmission
+    dm stock [item;price] → Add an item to the shop
     dm help            → Show this list of DM-only commands`,
 
     note: async t => {
@@ -125,6 +131,73 @@ document.addEventListener("DOMContentLoaded", () => {
       const doc = await broadcastRef.get();
       return doc.exists ? `📡 Radio Transmission: ${doc.data().text}` : "📡 Silence... No active broadcast.";
     },
+
+    "bank": async input => {
+        const doc = await goldRef.get();
+        const current = doc.exists ? doc.data().amount : 0;
+
+        if (!input) {
+          return `💰 Bank Reserve: ${current} gold`;
+        }
+
+        const match = input.trim().match(/^([\+\-]?)(\d+)$/);
+        if (!match) return "Usage: gold [+/-amount]";
+
+        const sign = match[1];
+        const value = parseInt(match[2]);
+
+        let newTotal = current;
+        if (sign === "+") newTotal += value;
+        else if (sign === "-") newTotal -= value;
+        else newTotal = value;
+
+        await goldRef.set({ amount: newTotal, timestamp: Date.now() });
+        return `💾 Bank balance updated: ${newTotal} gold`;
+      },
+
+      // 📜 List items available in the shop
+      "shop": async () => {
+        const snap = await shopRef.orderBy("timestamp").get();
+        if (snap.empty) return "🛒 The shop is empty.";
+        return snap.docs.map((doc, i) => {
+          const d = doc.data();
+          return `${i + 1}. ${d.name} — ${d.price} gold`;
+        }).join("\n");
+      },
+      // 🛍️ Buy an item from the shop
+      "buy": async itemName => {
+        if (!itemName) return "Usage: buy [item name]";
+
+        // Fetch current gold
+        const goldDoc = await goldRef.get();
+        const currentGold = goldDoc.exists ? goldDoc.data().amount : 0;
+
+        // Find the item in the shop
+        const snap = await shopRef.where("name", "==", itemName).limit(1).get();
+        if (snap.empty) return `❌ Item '${itemName}' not found in the shop.`;
+
+        const doc = snap.docs[0];
+        const item = doc.data();
+
+        if (currentGold < item.price)
+          return `💸 Not enough gold. You need ${item.price}, but have ${currentGold}.`;
+
+        // Deduct gold and remove item from shop
+        const newTotal = currentGold - item.price;
+        await goldRef.set({ amount: newTotal, timestamp: Date.now() });
+        await db.collection("inventory").add({ text: item.name, timestamp: Date.now() });
+        await shopRef.doc(doc.id).delete();
+
+        return `✅ Purchased '${item.name}' for ${item.price} gold.\n💰 New balance: ${newTotal} gold.\n📦 Item removed from shop.`;
+      },
+
+        "dm stock": async input => {
+          const [name, priceStr] = input.split(";");
+          const price = parseInt(priceStr);
+          if (!name || isNaN(price)) return "Usage: dm stock [item name];[price]";
+          await shopRef.add({ name: name.trim(), price, timestamp: Date.now() });
+          return `📦 '${name.trim()}' stocked for ${price} gold.`;
+        },
 
     clear: () => (terminal.textContent = ""),
     exit: () => "📖 Archive sealed. Float freely."
