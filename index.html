@@ -2,21 +2,90 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>∞ Library Terminal</title>
-  <link rel="stylesheet" href="ATR_Stayls/ATR_Stayls.css"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>∞ Arcane Terminal</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="ATR2.0_Styals/ATR2.0_Styal.css"/>
 </head>
 <body>
-  <div id="static"></div>
-  <div id="grid"></div>
+  
+  <div id="static-overlay"></div>
+  <div id="scanline"></div>
+
   <div id="terminal-wrapper">
-    <h2>🧮 Arcane Terminal of Recursion</h2>
-    <div id="terminal">🌐 Establishing Archive Link...</div>
-    <input id="cli" autocomplete="off" />
+    <header>
+      <h2>🧮 Arcane Terminal</h2>
+      <div id="system-clock">--:--:--</div>
+      <button id="tools-toggle">🛠️ TOOLS</button>
+    </header>
+    
+    <div id="terminal">
+      <div class="line system">Initializing Archive Protocol...</div>
+    </div>
+    
+    <div class="input-line">
+      <span class="prompt"></span>
+      <input id="cli" type="text" autocomplete="off" placeholder="Enter command..." autofocus />
+    </div>
   </div>
+
+  <aside id="side-tray">
+    <div class="tray-header">
+      <h3>GAME TOOLS</h3>
+      <button id="tray-close">X</button>
+    </div>
+
+    <div class="tool-section">
+      <h4>🎲 DICE ROLLER</h4>
+      <div id="dice-display">Rate: --</div>
+      <div class="dice-grid">
+        <button onclick="roll(4)">d4</button>
+        <button onclick="roll(6)">d6</button>
+        <button onclick="roll(8)">d8</button>
+        <button onclick="roll(10)">d10</button>
+        <button onclick="roll(12)">d12</button>
+        <button onclick="roll(20)">d20</button>
+        <button onclick="roll(100)">d100</button>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="tool-section">
+      <h4>🔢 CALCULATOR</h4>
+      <div id="calc-screen">0</div>
+      <div class="calc-grid">
+        <button onclick="calc('7')">7</button>
+        <button onclick="calc('8')">8</button>
+        <button onclick="calc('9')">9</button>
+        <button class="op" onclick="calc('/')">÷</button>
+        
+        <button onclick="calc('4')">4</button>
+        <button onclick="calc('5')">5</button>
+        <button onclick="calc('6')">6</button>
+        <button class="op" onclick="calc('*')">×</button>
+        
+        <button onclick="calc('1')">1</button>
+        <button onclick="calc('2')">2</button>
+        <button onclick="calc('3')">3</button>
+        <button class="op" onclick="calc('-')">-</button>
+        
+        <button class="clear" onclick="calc('C')">C</button>
+        <button onclick="calc('0')">0</button>
+        <button class="equal" onclick="calc('=')">=</button>
+        <button class="op" onclick="calc('+')">+</button>
+      </div>
+    </div>
+  </aside>
 
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
-  <script src="ATR_Code/ATR_Code.js"></script>
+  
+  <script src="ATR2.0_Code/ATR2.0_Code.js"></script>
+  
+  <script src="ATR2.0_Code/SideTray.js"></script>
+  
 </body>
 </html>
-
