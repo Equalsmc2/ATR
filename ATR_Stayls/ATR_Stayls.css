@@ -30,7 +30,7 @@ body {
   background-size: cover;
   opacity: 1.0;
   pointer-events: none;
-  z-index: 1;
+  z-index: 3;
 }
 
 #scanline {
