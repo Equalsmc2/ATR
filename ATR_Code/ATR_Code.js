@@ -4,220 +4,278 @@ document.addEventListener("DOMContentLoaded", () => {
     apiKey: "AIzaSyBJKMF5F9s_C6jIxUsAacZPTzTIEcWRHZQ",
     projectId: "library-terminal-4c413"
   };
-  firebase.initializeApp(config);
+  
+  if (!firebase.apps.length) firebase.initializeApp(config);
   const db = firebase.firestore();
 
-  // 💾 DOM Elements
+  // 💾 State & DOM
   const terminal = document.getElementById("terminal");
   const cli = document.getElementById("cli");
-  const tempRef = db.collection("meta").doc("temperature");
-  const broadcastRef = db.collection("meta").doc("broadcast");
-  const goldRef = db.collection("meta").doc("gold");
-  const shopRef = db.collection("shop");
+  
   let cache = { notes: [], inventory: [] };
+  let cmdHistory = [];
+  let historyIndex = -1;
+  
+  // ⏰ NEW: Real-time System Clock
+  const updateClock = () => {
+    const now = new Date();
+    // Format: HH:MM:SS (Using 24h format fits the terminal vibe better, but 12h is fine too)
+    const timeString = now.toLocaleTimeString('en-US', { 
+      hour12: false, 
+      hour: '2-digit', 
+      minute: '2-digit', 
+      second: '2-digit' 
+    });
+    const clockEl = document.getElementById("system-clock");
+    if(clockEl) clockEl.innerText = timeString;
+  };
 
-  // 🧾 Utility Functions
-  const log = t => {
-    terminal.textContent += `\n${t}`;
+  // Start the clock immediately and update every second
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // 🧾 Utility: Logging with Colors
+  const log = (text, type = "normal") => {
+    const div = document.createElement("div");
+    div.classList.add("line", type);
+    div.innerHTML = text.replace(/\n/g, "<br>");
+    terminal.appendChild(div);
     terminal.scrollTop = terminal.scrollHeight;
   };
-  const format = ms => new Date(ms).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
 
-  // 📡 Load Data
-  const fetchAndDisplay = async () => {
-    log("⏳ Loading stored glyphs...\n");
+  const formatTime = (ms) => new Date(ms).toLocaleString(undefined, { 
+    month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' 
+  });
 
-    const showDocs = async (type, label) => {
-      const snap = await db.collection(type).orderBy("timestamp").get();
-      cache[type] = snap.docs.map(doc => doc.id);
-      log(label);
-      if (snap.empty) log("  — None —");
-      else snap.forEach((doc, i) => {
+  // 📡 Data Loading
+  const loadData = async () => {
+    log("⏳ Establishing link to the Archive...", "system");
+
+    try {
+      // Load Notes
+      const notesSnap = await db.collection("notes").orderBy("timestamp").get();
+      cache.notes = notesSnap.docs.map(doc => doc.id);
+      
+      log("<br>📜 <u>ARCHIVED NOTES:</u>", "gold");
+      if (notesSnap.empty) log(" — No records found —", "system");
+      else notesSnap.forEach((doc, i) => {
         const d = doc.data();
-        const line = type === "notes"
-          ? `${i + 1}. [${format(d.timestamp)}] ${d.text}`
-          : `${i + 1}. ${d.text}`;
-        log(line);
+        log(`<span class="timestamp">[${formatTime(d.timestamp)}]</span> ${i + 1}. ${d.text}`);
       });
-    };
 
-    await showDocs("notes", "📜 Notes:");
-    await showDocs("inventory", "\n🎒 Inventory:");
-    log("\nType 'help' or 'dm help' for commands.");
+      // Load Inventory
+      const invSnap = await db.collection("inventory").orderBy("timestamp").get();
+      cache.inventory = invSnap.docs.map(doc => doc.id);
+      
+      log("<br>🎒 <u>INVENTORY:</u>", "gold");
+      if (invSnap.empty) log(" — Empty —", "system");
+      else invSnap.forEach((doc, i) => {
+        log(`${i + 1}. ${doc.data().text}`);
+      });
+
+      log("<br>✅ Link Established. Type 'help' for commands.", "system");
+    } catch (err) {
+      log(`❌ Connection Error: ${err.message}`, "error");
+    }
   };
 
-  // 🎮 Command Definitions
+  // 🎮 Command Logic
   const commands = {
-    help: () => `Player Commands:
-    note [text]        → Archive a note
-    notes              → List notes
-    delete [#]         → Remove a note
-    add [item]         → Add item to inventory
-    take [#]           → Remove item from inventory
-    inventory          → List inventory
-    weather            → Show current temperature
-    radio              → Listen to the current broadcast
-    clear              → Clear screen
-    bank [+/-amount]   → Manage gold reserves
-    shop               → List shop items
-    buy [item name]    → Purchase an item from the shop
-    exit               → Seal the Archive`,
+    help: () => `
+    <span style="color:#fff">PLAYER COMMANDS:</span>
+    note [text]       → Write a new note
+    notes             → Read all notes
+    delete [#]        → Delete note by number
+    add [item]        → Add to inventory
+    take [#]          → Remove item by number
+    inventory         → Check inventory
+    weather           → Check temperature
+    radio             → Check broadcast frequency
+    bank [+/- amt]    → Check or change gold
+    shop              → View shop items
+    buy [item]        → Buy item (auto-deducts gold)
+    clear             → Clear terminal screen`,
 
-    "dm help": () => `DM Commands:
-    dm temp [text]     → Set the current temperature
-    dm broadcast [text] → Set the radio transmission
-    dm stock [item;price] → Add an item to the shop
-    dm help            → Show this list of DM-only commands`,
+    "dm help": () => `
+    <span style="color:#ff5555">DM COMMANDS:</span>
+    dm temp [text]      → Set weather
+    dm broadcast [text] → Set radio message
+    dm stock [item;100] → Add item to shop (use semicolon)`,
 
-    note: async t => {
-      if (!t) return "Usage: note [your text]";
+    // --- NOTES ---
+    note: async (t) => {
+      if (!t) return "Usage: note [text]";
       await db.collection("notes").add({ text: t, timestamp: Date.now() });
-      return "Note inscribed.";
+      return "✍️ Note inscribed into the archive.";
     },
-
     notes: async () => {
       const snap = await db.collection("notes").orderBy("timestamp").get();
-      if (snap.empty) return "No notes stored.";
       cache.notes = snap.docs.map(doc => doc.id);
-      return snap.docs.map((doc, i) =>
-        `${i + 1}. [${format(doc.data().timestamp)}] ${doc.data().text}`).join("\n");
+      if (snap.empty) return "No notes found.";
+      return snap.docs.map((doc, i) => 
+        `<span class="timestamp">[${formatTime(doc.data().timestamp)}]</span> ${i+1}. ${doc.data().text}`
+      ).join("\n");
     },
-
-    delete: async i => {
+    delete: async (i) => {
       const idx = parseInt(i) - 1;
-      if (isNaN(idx) || !cache.notes[idx]) return "Invalid note number.";
+      if (isNaN(idx) || !cache.notes[idx]) return "❌ Invalid note number.";
       await db.collection("notes").doc(cache.notes[idx]).delete();
-      return `Note ${idx + 1} removed.`;
+      return `🗑️ Note ${idx + 1} burned from the archive.`;
     },
 
-    add: async item => {
-      if (!item) return "Usage: add [item]";
+    // --- INVENTORY ---
+    add: async (item) => {
+      if (!item) return "Usage: add [item name]";
       await db.collection("inventory").add({ text: item, timestamp: Date.now() });
-      return "Item stored.";
+      return `🎒 '${item}' added to inventory.`;
     },
-
     inventory: async () => {
       const snap = await db.collection("inventory").orderBy("timestamp").get();
-      if (snap.empty) return "Inventory is empty.";
       cache.inventory = snap.docs.map(doc => doc.id);
-      return snap.docs.map((doc, i) => `${i + 1}. ${doc.data().text}`).join("\n");
+      if (snap.empty) return "Inventory is empty.";
+      return snap.docs.map((doc, i) => `${i+1}. ${doc.data().text}`).join("\n");
     },
-
-    take: async i => {
+    take: async (i) => {
       const idx = parseInt(i) - 1;
-      if (isNaN(idx) || !cache.inventory[idx]) return "Invalid item number.";
+      if (isNaN(idx) || !cache.inventory[idx]) return "❌ Invalid item number.";
+      const docRef = await db.collection("inventory").doc(cache.inventory[idx]).get();
+      const name = docRef.data().text;
       await db.collection("inventory").doc(cache.inventory[idx]).delete();
-      return `Item ${idx + 1} removed.`;
+      return `🗑️ '${name}' removed from inventory.`;
     },
 
+    // --- WORLD INFO ---
     weather: async () => {
-      const doc = await tempRef.get();
-      return doc.exists ? `🌤️ Current temperature: ${doc.data().text}` : "No temperature set.";
+      const doc = await db.collection("meta").doc("temperature").get();
+      return doc.exists ? `🌤️ Condition: ${doc.data().text}` : "No weather data.";
     },
-
-    "dm temp": async t => {
-      if (!t) return "Usage: dm temp [description]";
-      await tempRef.set({ text: t, timestamp: Date.now() });
-      return `🌡️ Temperature set to: ${t}`;
-    },
-
-    "dm broadcast": async message => {
-      if (!message) return "Usage: dm broadcast [message]";
-      await broadcastRef.set({ text: message, timestamp: Date.now() });
-      return `📡 Broadcast set: "${message}"`;
-    },
-
     radio: async () => {
-      const doc = await broadcastRef.get();
-      return doc.exists ? `📡 Radio Transmission: ${doc.data().text}` : "📡 Silence... No active broadcast.";
+      const doc = await db.collection("meta").doc("broadcast").get();
+      return doc.exists ? `📡 Incoming Transmission: "${doc.data().text}"` : "📡 Static... (No signal)";
+    },
+    
+    // --- ECONOMY ---
+    bank: async (input) => {
+      const goldRef = db.collection("meta").doc("gold");
+      const doc = await goldRef.get();
+      let current = doc.exists ? doc.data().amount : 0;
+
+      if (!input) return `💰 Current Reserve: ${current} gp`;
+
+      const match = input.trim().match(/^([\+\-]?)(\d+)$/);
+      if (!match) return "Usage: bank +50 or bank -20";
+
+      const sign = match[1];
+      const val = parseInt(match[2]);
+      
+      if (sign === "+") current += val;
+      else if (sign === "-") current -= val;
+      else current = val;
+
+      await goldRef.set({ amount: current, timestamp: Date.now() });
+      return `🪙 Transaction Complete. New Balance: ${current} gp`;
     },
 
-    "bank": async input => {
-        const doc = await goldRef.get();
-        const current = doc.exists ? doc.data().amount : 0;
+    shop: async () => {
+      const snap = await db.collection("shop").orderBy("price").get();
+      if (snap.empty) return "🛒 The shop shelves are bare.";
+      return snap.docs.map((doc, i) => 
+        `${i+1}. ${doc.data().name} — <span style="color:#ffcc00">${doc.data().price} gp</span>`
+      ).join("\n");
+    },
 
-        if (!input) {
-          return `💰 Bank Reserve: ${current} gold`;
-        }
+    buy: async (itemName) => {
+      if (!itemName) return "Usage: buy [item name]";
+      const goldRef = db.collection("meta").doc("gold");
+      const goldDoc = await goldRef.get();
+      const currentGold = goldDoc.exists ? goldDoc.data().amount : 0;
 
-        const match = input.trim().match(/^([\+\-]?)(\d+)$/);
-        if (!match) return "Usage: gold [+/-amount]";
+      const shopSnap = await db.collection("shop").where("name", "==", itemName).limit(1).get();
+      if (shopSnap.empty) return `❌ Item '${itemName}' not found.`;
 
-        const sign = match[1];
-        const value = parseInt(match[2]);
+      const itemDoc = shopSnap.docs[0];
+      const { price, name } = itemDoc.data();
 
-        let newTotal = current;
-        if (sign === "+") newTotal += value;
-        else if (sign === "-") newTotal -= value;
-        else newTotal = value;
+      if (currentGold < price) return `💸 Insufficient funds. Need ${price} gp, have ${currentGold} gp.`;
 
-        await goldRef.set({ amount: newTotal, timestamp: Date.now() });
-        return `💾 Bank balance updated: ${newTotal} gold`;
-      },
+      await goldRef.set({ amount: currentGold - price, timestamp: Date.now() });
+      await db.collection("inventory").add({ text: name, timestamp: Date.now() });
+      await db.collection("shop").doc(itemDoc.id).delete();
 
-      // 📜 List items available in the shop
-      "shop": async () => {
-        const snap = await shopRef.orderBy("timestamp").get();
-        if (snap.empty) return "🛒 The shop is empty.";
-        return snap.docs.map((doc, i) => {
-          const d = doc.data();
-          return `${i + 1}. ${d.name} — ${d.price} gold`;
-        }).join("\n");
-      },
-      // 🛍️ Buy an item from the shop
-      "buy": async itemName => {
-        if (!itemName) return "Usage: buy [item name]";
+      return `🤝 Purchased '${name}'.\n💰 Remaining Gold: ${currentGold - price}`;
+    },
 
-        // Fetch current gold
-        const goldDoc = await goldRef.get();
-        const currentGold = goldDoc.exists ? goldDoc.data().amount : 0;
+    // --- DM TOOLS ---
+    "dm temp": async (t) => {
+      if(!t) return "Usage: dm temp [text]";
+      await db.collection("meta").doc("temperature").set({ text: t, timestamp: Date.now() });
+      return `🌡️ Weather updated.`;
+    },
+    "dm broadcast": async (t) => {
+      if(!t) return "Usage: dm broadcast [text]";
+      await db.collection("meta").doc("broadcast").set({ text: t, timestamp: Date.now() });
+      return `📡 Broadcast signal updated.`;
+    },
+    "dm stock": async (input) => {
+      const [name, price] = input.split(";");
+      if (!name || !price) return "Usage: dm stock [item name];[price]";
+      await db.collection("shop").add({ name: name.trim(), price: parseInt(price), timestamp: Date.now() });
+      return `📦 Stocked '${name.trim()}' for ${price} gp.`;
+    },
 
-        // Find the item in the shop
-        const snap = await shopRef.where("name", "==", itemName).limit(1).get();
-        if (snap.empty) return `❌ Item '${itemName}' not found in the shop.`;
-
-        const doc = snap.docs[0];
-        const item = doc.data();
-
-        if (currentGold < item.price)
-          return `💸 Not enough gold. You need ${item.price}, but have ${currentGold}.`;
-
-        // Deduct gold and remove item from shop
-        const newTotal = currentGold - item.price;
-        await goldRef.set({ amount: newTotal, timestamp: Date.now() });
-        await db.collection("inventory").add({ text: item.name, timestamp: Date.now() });
-        await shopRef.doc(doc.id).delete();
-
-        return `✅ Purchased '${item.name}' for ${item.price} gold.\n💰 New balance: ${newTotal} gold.\n📦 Item removed from shop.`;
-      },
-
-        "dm stock": async input => {
-          const [name, priceStr] = input.split(";");
-          const price = parseInt(priceStr);
-          if (!name || isNaN(price)) return "Usage: dm stock [item name];[price]";
-          await shopRef.add({ name: name.trim(), price, timestamp: Date.now() });
-          return `📦 '${name.trim()}' stocked for ${price} gold.`;
-        },
-
-    clear: () => (terminal.textContent = ""),
-    exit: () => "📖 Archive sealed. Float freely."
+    clear: () => {
+      terminal.innerHTML = "";
+      return "";
+    },
+    exit: () => "🔒 Session terminated."
   };
 
-  // ⌨️ Command Input Listener
-  cli.addEventListener("keydown", async e => {
-    if (e.key === "Enter") {
+  // ⌨️ Input Handler
+  cli.addEventListener("keydown", async (e) => {
+    if (e.key === "ArrowUp") {
+      if (historyIndex > 0) {
+        historyIndex--;
+        cli.value = cmdHistory[historyIndex];
+      }
+      e.preventDefault();
+    } 
+    else if (e.key === "ArrowDown") {
+      if (historyIndex < cmdHistory.length - 1) {
+        historyIndex++;
+        cli.value = cmdHistory[historyIndex];
+      } else {
+        historyIndex = cmdHistory.length;
+        cli.value = "";
+      }
+      e.preventDefault();
+    }
+    else if (e.key === "Enter") {
       const input = cli.value.trim();
-      log("> " + input);
-      const [cmd, ...args] = input.split(" ");
-      const base = cmd.toLowerCase() === "dm" ? `${cmd} ${args[0]}` : cmd.toLowerCase();
-      const output = commands[base]
-        ? await commands[base](args.slice(cmd === "dm" ? 1 : 0).join(" "))
-        : `Unknown incantation: '${cmd}'`;
-      if (output) log(output);
+      if (!input) return;
+
+      cmdHistory.push(input);
+      historyIndex = cmdHistory.length;
+
+      log(`> ${input}`, "user");
       cli.value = "";
+
+      const [cmd, ...args] = input.split(" ");
+      const isDm = cmd.toLowerCase() === "dm";
+      const commandKey = isDm ? `dm ${args[0]}` : cmd.toLowerCase();
+      const commandArgs = isDm ? args.slice(1).join(" ") : args.join(" ");
+
+      try {
+        if (commands[commandKey]) {
+          const result = await commands[commandKey](commandArgs);
+          if (result) log(result);
+        } else {
+          log(`Unknown syntax: '${commandKey}'`, "error");
+        }
+      } catch (err) {
+        log(`System Failure: ${err.message}`, "error");
+      }
     }
   });
 
-  // 🚀 Initiate Terminal
-  fetchAndDisplay();
+  loadData();
 });
