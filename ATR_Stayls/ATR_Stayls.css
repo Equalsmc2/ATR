@@ -1,58 +1,179 @@
-#static {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background-image: url('https://media.giphy.com/media/oEI9uBYSzLpBK/giphy.gif');
-      background-size: cover;
-      opacity: 0.07;
-      pointer-events: none;
-      z-index: 2;
-    }
-    body {
-      margin: 0;
-      background: radial-gradient(#0a0a0a 40%, #000 100%);
-      font-family: monospace;
-      color: #bafac8;
-      overflow: hidden;
-    }
-    #grid {
-      position: fixed;
-      top: 0; left: 0;
-      width: 200%; height: 200%;
-      background-image:
-        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px);
-      background-size: 40px 40px;
-      z-index: -1;
-      animation: gridFlow 5s linear infinite;
-    }
-    @keyframes gridFlow { 100% { transform: translate(-40px, -40px); } }
-    #terminal-wrapper {
-      padding: 40px;
-      max-width: 800px;
-      margin: auto;
-    }
-    #terminal {
-      background: rgba(20,20,25,0.95);
-      border: 1px solid #444;
-      padding: 16px;
-      height: 70vh;
-      overflow-y: auto;
-      white-space: pre-wrap;
-      margin-bottom: 10px;
-    }
-    input {
-      background: rgba(30,30,40,0.95);
-      border: 1px solid #444;
-      color: rgb(180, 250, 200);
-      font-family: monospace;
-      font-size: 16px;
-      width: 100%;
-      padding: 10px;
-      box-sizing: border-box;
-    }
-    h2 {
-      text-align: center;
-      color: #94f5dd;
-      text-shadow: 0 0 8px #38ffc3;
-    }
+/* --- Core Reset & Variables --- */
+:root {
+  --term-bg: #0a0a0a;
+  --term-text: #50ffab;
+  --term-dim: #2a6649;
+  --term-alert: #ff5555;
+  --term-gold: #ffcc00;
+  --font-stack: 'VT323', monospace;
+  --tray-width: 280px;
+}
+
+body {
+  margin: 0;
+  background-color: #000;
+  color: var(--term-text);
+  font-family: var(--font-stack);
+  font-size: 18px;
+  overflow: hidden;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- Background Effects --- */
+#static-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-image: url('https://media.giphy.com/media/oEI9uBYSzLpBK/giphy.gif');
+  background-size: cover;
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 1;
+}
+
+#scanline {
+  position: fixed;
+  left: 0; top: 0; width: 100%; height: 100%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* --- Terminal Container --- */
+#terminal-wrapper {
+  position: relative;
+  z-index: 10;
+  width: 90%;
+  max-width: 900px;
+  height: 85vh;
+  background: rgba(10, 15, 10, 0.95);
+  border: 1px solid #333;
+  box-shadow: 0 0 20px rgba(80, 255, 171, 0.1);
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border-radius: 4px;
+  transition: width 0.3s;
+}
+
+/* NEW: System Clock Style */
+#system-clock {
+  font-family: var(--font-stack);
+  color: var(--term-gold);
+  font-size: 1.2rem;
+  margin-left: auto; /* Pushes it to the right */
+  margin-right: 15px; /* Space between clock and button */
+  text-shadow: 0 0 2px var(--term-gold);
+  letter-spacing: 2px;
+}
+
+/* Update Header to align items correctly */
+header {
+  display: flex;
+  align-items: center;
+  /* Remove justify-content: space-between if it conflicts, 
+     but keeping it is usually fine with margin-left: auto on the clock */
+  border-bottom: 1px solid var(--term-dim);
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+}
+
+h2 { margin: 0; color: var(--term-text); text-shadow: 0 0 5px var(--term-dim); font-size: 1.5rem; }
+
+/* Toggle Button */
+#tools-toggle {
+  background: var(--term-dim);
+  color: #fff;
+  border: 1px solid var(--term-text);
+  font-family: var(--font-stack);
+  cursor: pointer;
+  padding: 4px 10px;
+  font-size: 1rem;
+}
+#tools-toggle:hover { background: var(--term-text); color: #000; }
+
+/* --- Output Log --- */
+#terminal {
+  flex: 1;
+  overflow-y: auto;
+  font-size: 1.1rem;
+  padding-right: 10px;
+  margin-bottom: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--term-dim) var(--term-bg);
+}
+#terminal::-webkit-scrollbar { width: 8px; }
+#terminal::-webkit-scrollbar-track { background: var(--term-bg); }
+#terminal::-webkit-scrollbar-thumb { background: var(--term-dim); border-radius: 4px; }
+
+.line { margin-bottom: 4px; line-height: 1.4; word-wrap: break-word; }
+.line.system { color: #888; font-style: italic; }
+.line.error { color: var(--term-alert); }
+.line.gold { color: var(--term-gold); }
+.line.user { color: #fff; opacity: 0.8; }
+.timestamp { color: var(--term-dim); font-size: 0.8em; margin-right: 8px; }
+
+/* --- Input Area --- */
+.input-line { display: flex; align-items: center; border-top: 1px solid var(--term-dim); padding-top: 10px; }
+.prompt { color: var(--term-text); margin-right: 10px; font-weight: bold; }
+input#cli {
+  flex: 1; background: transparent; border: none; color: #fff;
+  font-family: var(--font-stack); font-size: 1.2rem; outline: none;
+}
+
+/* --- SIDE TRAY --- */
+#side-tray {
+  position: fixed;
+  top: 0; right: -320px; /* Hidden by default */
+  width: var(--tray-width);
+  height: 100%;
+  background: #0d120f;
+  border-left: 2px solid var(--term-dim);
+  z-index: 20;
+  padding: 20px;
+  box-shadow: -5px 0 20px rgba(0,0,0,0.8);
+  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+#side-tray.open { right: 0; }
+
+.tray-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.tray-header h3 { margin: 0; color: var(--term-gold); border-bottom: 1px solid var(--term-gold); width: 100%; }
+#tray-close { background: none; border: none; color: var(--term-alert); font-size: 1.5rem; cursor: pointer; }
+
+.tool-section { margin-bottom: 20px; }
+.tool-section h4 { margin: 0 0 10px 0; color: var(--term-dim); border-bottom: 1px dashed #333; }
+
+.divider { border: 0; border-top: 1px solid #333; margin: 20px 0; }
+
+/* Dice Styles */
+#dice-display {
+  font-size: 1.5rem; text-align: center; margin-bottom: 10px;
+  background: #000; padding: 10px; border: 1px solid var(--term-dim); color: #fff;
+}
+.dice-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+.dice-grid button {
+  background: #111; border: 1px solid var(--term-text); color: var(--term-text);
+  font-family: var(--font-stack); padding: 5px; cursor: pointer; font-size: 1.1rem;
+}
+.dice-grid button:hover { background: var(--term-text); color: #000; }
+
+/* Calculator Styles */
+#calc-screen {
+  font-size: 1.8rem; text-align: right; margin-bottom: 10px;
+  background: #151a15; padding: 5px 10px; color: var(--term-gold); border: 1px solid #444;
+}
+.calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+.calc-grid button {
+  padding: 10px; font-size: 1.2rem; font-family: var(--font-stack); cursor: pointer;
+  background: #222; border: 1px solid #444; color: #eee;
+}
+.calc-grid button:hover { background: #444; }
+.calc-grid .op { color: var(--term-gold); }
+.calc-grid .clear { background: var(--term-alert); color: #000; }
+.calc-grid .equal { background: var(--term-text); color: #000; }
