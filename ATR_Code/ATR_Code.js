@@ -279,3 +279,43 @@ document.addEventListener("DOMContentLoaded", () => {
 
   loadData();
 });
+
+// --- LIVE RELAY LOGIC ---
+const chatBox = document.getElementById("chat-messages");
+const chatInput = document.getElementById("chat-input");
+
+// 1. LISTEN (Real-time updates)
+db.collection("relay_chat")
+  .orderBy("timestamp", "desc")
+  .limit(30)
+  .onSnapshot((snapshot) => {
+    chatBox.innerHTML = ""; // Clear for re-render
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      const msgDiv = document.createElement("div");
+      msgDiv.className = "chat-msg";
+      msgDiv.innerHTML = `
+        <span class="timestamp">[${formatTime(data.timestamp)}]</span>
+        <span class="user">USR_${doc.id.slice(0,3).toUpperCase()}></span> 
+        <span class="text">${data.text}</span>
+      `;
+      chatBox.appendChild(msgDiv);
+    });
+  });
+
+// 2. TRANSMIT (Send message)
+chatInput.addEventListener("keydown", async (e) => {
+  if (e.key === "Enter" && chatInput.value.trim() !== "") {
+    const text = chatInput.value.trim();
+    chatInput.value = ""; // Clear immediately for UX
+    
+    try {
+      await db.collection("relay_chat").add({
+        text: text,
+        timestamp: Date.now()
+      });
+    } catch (err) {
+      console.error("Transmission failed:", err);
+    }
+  }
+});
