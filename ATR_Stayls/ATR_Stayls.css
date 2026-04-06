@@ -178,3 +178,60 @@ input#cli {
 .calc-grid .op { color: var(--term-gold); }
 .calc-grid .clear { background: var(--term-alert); color: #000; }
 .calc-grid .equal { background: var(--term-text); color: #000; }
+
+/* Live Relay */
+#main-interface {
+  display: flex;
+  width: 95vw;
+  height: 85vh;
+  gap: 15px;
+  z-index: 10;
+}
+
+#terminal-wrapper { flex: 2; } /* Terminal is wider */
+
+#chat-wrapper {
+  flex: 1;
+  background: rgba(5, 10, 5, 0.9);
+  border: 1px solid var(--term-dim);
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+
+#chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column-reverse; /* Newest at bottom */
+}
+
+.chat-msg { margin-bottom: 8px; border-left: 2px solid var(--term-dim); padding-left: 8px; }
+.chat-msg .user { color: var(--term-gold); font-weight: bold; }
+.chat-msg .text { color: #fff; }
+
+#chat-input {
+  width: 100%;
+  background: #000;
+  border: 1px solid var(--term-dim);
+  color: var(--term-text);
+  font-family: var(--font-stack);
+  padding: 5px;
+  outline: none;
+}
+
+.status-pulse {
+  width: 8px; height: 8px;
+  background: var(--term-text);
+  border-radius: 50%;
+  box-shadow: 0 0 5px var(--term-text);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
