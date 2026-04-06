@@ -14,6 +14,7 @@
   <div id="static-overlay"></div>
   <div id="scanline"></div>
 
+<!--
   <div id="terminal-wrapper">
     <header>
       <h2>🧮 Arcane Terminal</h2>
@@ -30,6 +31,39 @@
       <input id="cli" type="text" autocomplete="off" placeholder="Enter command..." autofocus />
     </div>
   </div>
+  -->
+  <!-- -->
+  <div id="main-interface">
+  <div id="terminal-wrapper">
+    <header>
+      <h2>🧮 Arcane Terminal</h2>
+      <div id="system-clock">--:--:--</div>
+      <button id="tools-toggle">🛠️ TOOLS</button>
+    </header>
+    
+    <div id="terminal">
+      <div class="line system">Initializing Archive Protocol...</div>
+    </div>
+    
+    <div class="input-line">
+      <span class="prompt">CMD></span>
+      <input id="cli" type="text" autocomplete="off" placeholder="Enter command..." autofocus />
+    </div>
+  </div>
+  <!-- -->
+
+  <div id="chat-wrapper">
+    <header>
+      <h3>📡 LIVE_RELAY</h3>
+      <span class="status-pulse"></span>
+    </header>
+    <div id="chat-messages">
+      </div>
+    <div class="chat-input-area">
+      <input id="chat-input" type="text" placeholder="TRANSMIT MESSAGE..." autocomplete="off" />
+    </div>
+  </div>
+</div>
 
   <aside id="side-tray">
     <div class="tray-header">
