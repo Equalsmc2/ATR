@@ -7,68 +7,48 @@
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="ATR_Stayls/ATR_Stayls.css"/>
+  <link rel="stylesheet" href="ATR_Stayls.css"/>
 </head>
 <body>
   
   <div id="static-overlay"></div>
   <div id="scanline"></div>
 
-<!--
-  <div id="terminal-wrapper">
-    <header>
-      <h2>🧮 Arcane Terminal</h2>
-      <div id="system-clock">--:--:--</div>
-      <button id="tools-toggle">🛠️ TOOLS</button>
-    </header>
-    
-    <div id="terminal">
-      <div class="line system">Initializing Archive Protocol...</div>
-    </div>
-    
-    <div class="input-line">
-      <span class="prompt"></span>
-      <input id="cli" type="text" autocomplete="off" placeholder="Enter command..." autofocus />
-    </div>
-  </div>
-  -->
-  <!-- -->
   <div id="main-interface">
-  <div id="terminal-wrapper">
-    <header>
-      <h2>🧮 Arcane Terminal</h2>
-      <div id="system-clock">--:--:--</div>
-      <button id="tools-toggle">🛠️ TOOLS</button>
-    </header>
-    
-    <div id="terminal">
-      <div class="line system">Initializing Archive Protocol...</div>
-    </div>
-    
-    <div class="input-line">
-      <span class="prompt">CMD></span>
-      <input id="cli" type="text" autocomplete="off" placeholder="Enter command..." autofocus />
-    </div>
-  </div>
-  <!-- -->
-
-  <div id="chat-wrapper">
-    <header>
-      <h3>📡 LIVE_RELAY</h3>
-      <span class="status-pulse"></span>
-    </header>
-    <div id="chat-messages">
+    <div id="terminal-wrapper">
+      <header>
+        <h2>🧮 Arcane Terminal</h2>
+        <div id="system-clock">--:--:--</div>
+        <button id="tools-toggle">🛠️ TOOLS</button>
+      </header>
+      
+      <div id="terminal">
+        <div class="line system">Initializing Archive Protocol...</div>
       </div>
-    <div class="chat-input-area">
-      <input id="chat-input" type="text" placeholder="TRANSMIT MESSAGE..." autocomplete="off" />
+      
+      <div class="input-line">
+        <span class="prompt">CMD></span>
+        <input id="cli" type="text" autocomplete="off" placeholder="Enter command..." autofocus />
+      </div>
+    </div>
+
+    <div id="chat-wrapper">
+      <header>
+        <h3>📡 LIVE_RELAY</h3>
+        <span class="status-pulse"></span>
+      </header>
+      <div id="chat-messages"></div>
+      <div class="chat-input-area">
+        <span class="prompt">MSG></span>
+        <input id="chat-input" type="text" placeholder="Transmit message..." autocomplete="off" />
+      </div>
     </div>
   </div>
-</div>
 
   <aside id="side-tray">
     <div class="tray-header">
       <h3>GAME TOOLS</h3>
-      <button id="tray-close">X</button>
+      <button id="tray-close">✖</button>
     </div>
 
     <div class="tool-section">
@@ -117,9 +97,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
   
-  <script src="ATR_Code/ATR_Code.js"></script>
-  
-  <script src="ATR_Code/SideTray.js"></script>
-  
+  <script src="ATR_Code.js"></script>
+  <script src="SideTray.js"></script>
 </body>
 </html>
