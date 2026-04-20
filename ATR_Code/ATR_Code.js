@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
       second: '2-digit' 
     });
     const clockEl = document.getElementById("system-clock");
-    if(clockEl) clockEl.innerText = timeString;
+    if(clockEl) clockEl.innerText = timeString + " SYS";
   };
 
   setInterval(updateClock, 1000);
@@ -42,126 +42,130 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const formatTime = (ms) => new Date(ms).toLocaleString(undefined, { 
-    month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' 
+    month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' 
   });
 
   // 📡 Data Loading
   const loadData = async () => {
-    log("⏳ Establishing link to the Archive...", "system");
+    log("[SYSTEM] Calibrating spatial dimensions...", "system");
+    log("[SYSTEM] Injecting reality parameters...", "system");
 
     try {
-      // Load Notes
+      // Load Scripts (formerly Notes)
       const notesSnap = await db.collection("notes").orderBy("timestamp").get();
       cache.notes = notesSnap.docs.map(doc => doc.id);
       
-      log("<br>📜 <u>ARCHIVED NOTES:</u>", "gold");
-      if (notesSnap.empty) log(" — No records found —", "system");
+      log("<br>📄 <u>COMPILED SCRIPTS:</u>", "gold");
+      if (notesSnap.empty) log(" [NULL] No operational scripts found.", "system");
       else notesSnap.docs.forEach((doc, i) => { 
         const d = doc.data();
-        log(`<span class="timestamp">[${formatTime(d.timestamp)}]</span> ${i + 1}. ${d.text}`);
+        log(`<span class="timestamp">[${formatTime(d.timestamp)}]</span> SCRIPT_0${i + 1}: ${d.text}`);
       });
 
-      // Load Inventory
+      // Load Embedded Data (formerly Inventory)
       const invSnap = await db.collection("inventory").orderBy("timestamp").get();
       cache.inventory = invSnap.docs.map(doc => doc.id);
       
-      log("<br>🎒 <u>INVENTORY:</u>", "gold");
-      if (invSnap.empty) log(" — Empty —", "system");
+      log("<br>📦 <u>EMBEDDED REGISTRY:</u>", "gold");
+      if (invSnap.empty) log(" [NULL] Registry empty.", "system");
       else invSnap.docs.forEach((doc, i) => { 
-        log(`${i + 1}. ${doc.data().text}`);
+        log(` NODE_0${i + 1}: ${doc.data().text}`);
       });
 
-      log("<br>✅ Link Established. Type 'help' for commands.", "system");
+      log("<br>[STATUS: ONLINE] Run 'commands' to view logic syntax.", "system");
     } catch (err) {
-      log(`❌ Connection Error: ${err.message}`, "error");
+      log(`[FATAL ERROR] Matrix desync: ${err.message}`, "error");
     }
   };
 
   // 🎮 Command Logic
   const commands = {
-    help: () => `
-    <span style="color:#fff">PLAYER COMMANDS:</span>
-    note [text]       → Write a new note
-    notes             → Read all notes
-    delete [#]        → Delete note by number
-    add [item]        → Add to inventory
-    take [#]          → Remove item by number
-    inventory         → Check inventory
-    weather           → Check temperature
-    radio             → Check broadcast frequency
-    bank [+/- amt]    → Check or change gold
-    shop              → View shop items
-    buy [item]        → Buy item (auto-deducts gold)
-    clear             → Clear terminal screen`,
+    commands: () => `
+    <span style="color:#00ffff; font-family:'Orbitron', sans-serif; letter-spacing:1px;">[ LOGIC SYNTAX ]</span>
+    compile [text]    → Write a script to the matrix
+    scripts           → Read all compiled scripts
+    terminate [#]     → Erase script by node number
+    encode [item]     → Embed an item into your spatial registry
+    extract [#]       → Remove an item by node number
+    registry          → Check embedded spatial registry
+    dimensions        → Check current spatial alignment/conditions
+    telemetry         → Intercept quantum frequency signals
+    cycles [+/- amt]  → Adjust computational processing energy
+    constructs        → View available reality blueprints
+    synthesize [item] → Expend cycles to synthesize a construct
+    clear             → Purge terminal display`,
 
-    "dm help": () => `
-    <span style="color:#ff5555">DM COMMANDS:</span>
-    dm temp [text]      → Set weather
-    dm broadcast [text] → Set radio message
-    dm stock [item;100] → Add item to shop (use semicolon)`,
+    // ALIAS FOR MUSCLE MEMORY
+    help: function() { return this.commands(); },
 
-    // --- NOTES ---
-    note: async (t) => {
-      if (!t) return "Usage: note [text]";
+    "admin": () => `
+    <span style="color:#ff0055; font-family:'Orbitron', sans-serif;">[ ADMIN OVERRIDES ]</span>
+    admin param [text]       → Alter spatial conditions (weather)
+    admin signal [text]      → Broadcast quantum telemetry
+    admin inject [item;100]  → Upload blueprint to constructs (use semicolon)`,
+
+    // --- SCRIPTS (NOTES) ---
+    compile: async (t) => {
+      if (!t) return "Syntax Error: compile [text]";
       await db.collection("notes").add({ text: t, timestamp: Date.now() });
-      return "✍️ Note inscribed into the archive.";
+      return "[SUCCESS] Script successfully compiled to reality matrix.";
     },
-    notes: async () => {
+    scripts: async () => {
       const snap = await db.collection("notes").orderBy("timestamp").get();
       cache.notes = snap.docs.map(doc => doc.id);
-      if (snap.empty) return "No notes found.";
+      if (snap.empty) return "[NULL] No scripts exist in this plane.";
       return snap.docs.map((doc, i) => 
-        `<span class="timestamp">[${formatTime(doc.data().timestamp)}]</span> ${i+1}. ${doc.data().text}`
+        `<span class="timestamp">[${formatTime(doc.data().timestamp)}]</span> SCRIPT_0${i+1}: ${doc.data().text}`
       ).join("\n");
     },
-    delete: async (i) => {
+    terminate: async (i) => {
       const idx = parseInt(i) - 1;
-      if (isNaN(idx) || !cache.notes[idx]) return "❌ Invalid note number.";
+      if (isNaN(idx) || !cache.notes[idx]) return "[ERROR] Invalid script node designation.";
       await db.collection("notes").doc(cache.notes[idx]).delete();
-      return `🗑️ Note ${idx + 1} burned from the archive.`;
+      return `[EXECUTED] Script_0${idx + 1} terminated and purged.`;
     },
 
-    // --- INVENTORY ---
-    add: async (item) => {
-      if (!item) return "Usage: add [item name]";
+    // --- REGISTRY (INVENTORY) ---
+    encode: async (item) => {
+      if (!item) return "Syntax Error: encode [item name]";
       await db.collection("inventory").add({ text: item, timestamp: Date.now() });
-      return `🎒 '${item}' added to inventory.`;
+      return `[SUCCESS] Parameter '${item}' encoded to spatial registry.`;
     },
-    inventory: async () => {
+    registry: async () => {
       const snap = await db.collection("inventory").orderBy("timestamp").get();
       cache.inventory = snap.docs.map(doc => doc.id);
-      if (snap.empty) return "Inventory is empty.";
-      return snap.docs.map((doc, i) => `${i+1}. ${doc.data().text}`).join("\n");
+      if (snap.empty) return "[NULL] Spatial registry is empty.";
+      return snap.docs.map((doc, i) => `NODE_0${i+1}: ${doc.data().text}`).join("\n");
     },
-    take: async (i) => {
+    extract: async (i) => {
       const idx = parseInt(i) - 1;
-      if (isNaN(idx) || !cache.inventory[idx]) return "❌ Invalid item number.";
+      if (isNaN(idx) || !cache.inventory[idx]) return "[ERROR] Invalid node designation.";
       const docRef = await db.collection("inventory").doc(cache.inventory[idx]).get();
       const name = docRef.data().text;
       await db.collection("inventory").doc(cache.inventory[idx]).delete();
-      return `🗑️ '${name}' removed from inventory.`;
+      return `[EXECUTED] '${name}' extracted from registry.`;
     },
 
     // --- WORLD INFO ---
-    weather: async () => {
+    dimensions: async () => {
       const doc = await db.collection("meta").doc("temperature").get();
-      return doc.exists ? `🌤️ Condition: ${doc.data().text}` : "No weather data.";
+      return doc.exists ? `[SPATIAL ALIGNMENT]: ${doc.data().text}` : "[ERROR] Sensors disabled.";
     },
-    radio: async () => {
+    telemetry: async () => {
       const doc = await db.collection("meta").doc("broadcast").get();
-      return doc.exists ? `📡 Incoming Transmission: "${doc.data().text}"` : "📡 Static... (No signal)";
+      return doc.exists ? `[QUANTUM FREQUENCY INTERCEPT]:\n"${doc.data().text}"` : "[SILENCE] No telemetry detected.";
     },
     
-    // --- ECONOMY ---
-    bank: async (input) => {
+    // --- CYCLES (ECONOMY) ---
+    cycles: async (input) => {
       const goldRef = db.collection("meta").doc("gold");
       const doc = await goldRef.get();
       let current = doc.exists ? doc.data().amount : 0;
 
-      if (!input) return `💰 Current Reserve: ${current} gp`;
+      if (!input) return `[COMPUTE POWER]: ${current} Cycles available.`;
 
       const match = input.trim().match(/^([\+\-]?)(\d+)$/);
-      if (!match) return "Usage: bank +50 or bank -20";
+      if (!match) return "Syntax Error: cycles +50 or cycles -20";
 
       const sign = match[1];
       const val = parseInt(match[2]);
@@ -171,61 +175,60 @@ document.addEventListener("DOMContentLoaded", () => {
       else current = val;
 
       await goldRef.set({ amount: current, timestamp: Date.now() });
-      return `🪙 Transaction Complete. New Balance: ${current} gp`;
+      return `[SYNC] Compute updated. Available processing energy: ${current} Cycles.`;
     },
 
-    shop: async () => {
+    constructs: async () => {
       const snap = await db.collection("shop").orderBy("price").get();
-      if (snap.empty) return "🛒 The shop shelves are bare.";
+      if (snap.empty) return "[NULL] No blueprints loaded in the synthesizer.";
       return snap.docs.map((doc, i) => 
-        `${i+1}. ${doc.data().name} — <span style="color:#ffcc00">${doc.data().price} gp</span>`
+        `BLUEPRINT_0${i+1}: ${doc.data().name} — <span style="color:#00ffcc">${doc.data().price} Cycles</span>`
       ).join("\n");
     },
 
-    buy: async (itemName) => {
-      if (!itemName) return "Usage: buy [item name]";
+    synthesize: async (itemName) => {
+      if (!itemName) return "Syntax Error: synthesize [blueprint name]";
       const goldRef = db.collection("meta").doc("gold");
       const goldDoc = await goldRef.get();
       const currentGold = goldDoc.exists ? goldDoc.data().amount : 0;
 
       const shopSnap = await db.collection("shop").where("name", "==", itemName).limit(1).get();
-      if (shopSnap.empty) return `❌ Item '${itemName}' not found.`;
+      if (shopSnap.empty) return `[ERROR] Blueprint '${itemName}' does not exist in registry.`;
 
       const itemDoc = shopSnap.docs[0];
       const { price, name } = itemDoc.data();
 
-      if (currentGold < price) return `💸 Insufficient funds. Need ${price} gp, have ${currentGold} gp.`;
+      if (currentGold < price) return `[DENIED] Insufficient compute energy. Requires ${price} Cycles. You have ${currentGold}.`;
 
       await goldRef.set({ amount: currentGold - price, timestamp: Date.now() });
       await db.collection("inventory").add({ text: name, timestamp: Date.now() });
       await db.collection("shop").doc(itemDoc.id).delete();
 
-      return `🤝 Purchased '${name}'.\n💰 Remaining Gold: ${currentGold - price}`;
+      return `[FABRICATED] Blueprint '${name}' successfully synthesized.\nRemaining Energy: ${currentGold - price} Cycles.`;
     },
 
     // --- DM TOOLS ---
-    "dm temp": async (t) => {
-      if(!t) return "Usage: dm temp [text]";
+    "admin param": async (t) => {
+      if(!t) return "Syntax Error: admin param [text]";
       await db.collection("meta").doc("temperature").set({ text: t, timestamp: Date.now() });
-      return `🌡️ Weather updated.`;
+      return `[OVERRIDE] Spatial alignment parameters updated.`;
     },
-    "dm broadcast": async (t) => {
-      if(!t) return "Usage: dm broadcast [text]";
+    "admin signal": async (t) => {
+      if(!t) return "Syntax Error: admin signal [text]";
       await db.collection("meta").doc("broadcast").set({ text: t, timestamp: Date.now() });
-      return `📡 Broadcast signal updated.`;
+      return `[OVERRIDE] Quantum telemetry broadcast injected.`;
     },
-    "dm stock": async (input) => {
+    "admin inject": async (input) => {
       const [name, price] = input.split(";");
-      if (!name || !price) return "Usage: dm stock [item name];[price]";
+      if (!name || !price) return "Syntax Error: admin inject [blueprint name];[price]";
       await db.collection("shop").add({ name: name.trim(), price: parseInt(price), timestamp: Date.now() });
-      return `📦 Stocked '${name.trim()}' for ${price} gp.`;
+      return `[SYSTEM] Injected blueprint '${name.trim()}' requiring ${price} Cycles.`;
     },
 
     clear: () => {
       terminal.innerHTML = "";
       return "";
-    },
-    exit: () => "🔒 Session terminated."
+    }
   };
 
   // ⌨️ Input Handler
@@ -254,17 +257,15 @@ document.addEventListener("DOMContentLoaded", () => {
       cmdHistory.push(input);
       historyIndex = cmdHistory.length;
 
-      log(`> ${input}`, "user");
+      log(`[EXEC]> ${input}`, "user");
       cli.value = "";
 
-      // 🔥 Improved parsing: splits by 1 or more spaces so double-spaces don't crash it
       const parts = input.split(/\s+/);
       const cmd = parts[0].toLowerCase();
       const args = parts.slice(1);
 
-      const isDm = cmd === "dm";
-      // Ensure 'dm' has a second argument before trying to read it
-      const commandKey = (isDm && args.length > 0) ? `dm ${args[0].toLowerCase()}` : cmd;
+      const isDm = cmd === "admin";
+      const commandKey = (isDm && args.length > 0) ? `admin ${args[0].toLowerCase()}` : cmd;
       const commandArgs = isDm ? args.slice(1).join(" ") : args.join(" ");
 
       try {
@@ -272,10 +273,10 @@ document.addEventListener("DOMContentLoaded", () => {
           const result = await commands[commandKey](commandArgs);
           if (result) log(result);
         } else {
-          log(`Unknown syntax: '${commandKey}'`, "error");
+          log(`[EXCEPTION] Unrecognized parameter: '${commandKey}'`, "error");
         }
       } catch (err) {
-        log(`System Failure: ${err.message}`, "error");
+        log(`[CRITICAL] Logic exception: ${err.message}`, "error");
       }
     }
   });
@@ -287,30 +288,28 @@ document.addEventListener("DOMContentLoaded", () => {
   const chatInput = document.getElementById("chat-input");
 
   if (chatBox && chatInput) {
-    // 1. LISTEN (Real-time updates)
     db.collection("relay_chat")
       .orderBy("timestamp", "desc")
       .limit(30)
       .onSnapshot((snapshot) => {
-        chatBox.innerHTML = ""; // Clear for re-render
+        chatBox.innerHTML = ""; 
         snapshot.forEach((doc) => {
           const data = doc.data();
           const msgDiv = document.createElement("div");
           msgDiv.className = "chat-msg";
           msgDiv.innerHTML = `
             <span class="timestamp">[${formatTime(data.timestamp)}]</span>
-            <span class="user">USR_${doc.id.slice(0,3).toUpperCase()}></span> 
+            <span class="user">NODE_${doc.id.slice(0,4).toUpperCase()}></span> 
             <span class="text">${data.text}</span>
           `;
           chatBox.appendChild(msgDiv);
         });
       });
 
-    // 2. TRANSMIT (Send message)
     chatInput.addEventListener("keydown", async (e) => {
       if (e.key === "Enter" && chatInput.value.trim() !== "") {
         const text = chatInput.value.trim();
-        chatInput.value = ""; // Clear immediately for UX
+        chatInput.value = ""; 
         
         try {
           await db.collection("relay_chat").add({
@@ -318,10 +317,9 @@ document.addEventListener("DOMContentLoaded", () => {
             timestamp: Date.now()
           });
         } catch (err) {
-          console.error("Transmission failed:", err);
+          console.error("Telemetry failed:", err);
         }
       }
     });
   }
-
 });
