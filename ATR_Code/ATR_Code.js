@@ -322,4 +322,37 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+  // --- QUANTUM PARALLAX (MOUSE REACTIVITY) ---
+  const spatialGrid = document.getElementById("spatial-grid");
+  const terminalWrapper = document.getElementById("terminal-wrapper");
+  const chatWrapper = document.getElementById("chat-wrapper");
+
+  document.addEventListener("mousemove", (e) => {
+    // Calculate mouse position relative to the center of the screen
+    const x = (window.innerWidth / 2 - e.pageX) / 40;
+    const y = (window.innerHeight / 2 - e.pageY) / 40;
+
+    // Shift the background grids in the opposite direction of the mouse
+    if (spatialGrid) {
+      spatialGrid.style.transform = `translate(${x}px, ${y}px)`;
+    }
+
+    // Add a tiny tilt to the terminal windows based on the mouse
+    const tiltX = (window.innerHeight / 2 - e.pageY) / 150;
+    const tiltY = (e.pageX - window.innerWidth / 2) / 150;
+    
+    if (terminalWrapper && chatWrapper) {
+      // Overrides the standard CSS animation momentarily to track the mouse
+      terminalWrapper.style.transform = `perspective(1500px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+      chatWrapper.style.transform = `perspective(1500px) rotateX(${tiltX * -1}deg) rotateY(${tiltY * -1}deg)`;
+    }
+  });
+
+  // Reset the tilt when the mouse leaves the window so the CSS animation can take back over
+  document.addEventListener("mouseleave", () => {
+    if (terminalWrapper && chatWrapper) {
+      terminalWrapper.style.transform = "";
+      chatWrapper.style.transform = "";
+    }
+  });
 });
