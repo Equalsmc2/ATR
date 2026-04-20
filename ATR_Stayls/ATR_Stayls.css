@@ -1,10 +1,10 @@
 /* --- Core Variables: Reality Matrix (True Azure) --- */
 :root {
-  --term-bg: rgba(5, 5, 20, 0.4); /* Much more transparent to see the code behind */
-  --term-text: #0088ff; /* Pure Electric Azure Blue */
-  --term-dim: #0033cc; /* Deep spatial blue */
-  --term-alert: #ff0055; /* Sharp synthetic red */
-  --term-gold: #00ffff; /* Pure Cyan highlights */
+  --term-bg: rgba(5, 5, 20, 0.4); 
+  --term-text: #0088ff; 
+  --term-dim: #0033cc; 
+  --term-alert: #ff0055; 
+  --term-gold: #00ffff; 
   
   --font-headers: 'Orbitron', sans-serif;
   --font-code: 'Fira Code', monospace;
@@ -32,7 +32,7 @@ body {
   position: fixed;
   top: 0; left: 0; width: 100vw; height: 100vh;
   z-index: 0;
-  opacity: 0.6; /* Keeps it in the background */
+  opacity: 0.6; 
 }
 
 /* --- Spatial Grid & Matrix Background --- */
@@ -64,7 +64,7 @@ body {
   height: 90vh;
   gap: 25px;
   z-index: 10;
-  perspective: 2500px; /* Deep 3D space */
+  perspective: 2500px; 
 }
 
 /* --- Terminal Container --- */
@@ -72,7 +72,7 @@ body {
   flex: 2.2;
   position: relative;
   background: var(--term-bg);
-  backdrop-filter: blur(12px); /* Intense glass blur */
+  backdrop-filter: blur(12px); 
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(0, 136, 255, 0.3);
   box-shadow: 0 0 40px rgba(0, 136, 255, 0.1), inset 0 0 30px rgba(0, 136, 255, 0.2);
@@ -191,7 +191,14 @@ input#cli::placeholder, input#chat-input::placeholder { color: var(--term-dim); 
   padding: 12px; border-left: 3px solid var(--term-gold); 
 }
 .chat-msg .user { color: var(--term-gold); font-family: var(--font-headers); font-size: 0.95rem; letter-spacing: 1px;}
-.chat-msg .text { color: #fff; margin-left: 8px;}
+
+/* Fix for massive walls of text in the chat window */
+.chat-msg .text { 
+  color: #fff; 
+  margin-left: 8px;
+  word-break: break-word;
+  white-space: normal;
+}
 
 /* --- SIDE TRAY --- */
 #side-tray {
@@ -355,12 +362,4 @@ input#cli::placeholder, input#chat-input::placeholder { color: var(--term-dim); 
 @keyframes ticker-scroll {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); } 
-}
-
-/* Fix for massive walls of text in the chat window */
-.chat-msg .text { 
-  color: #fff; 
-  margin-left: 8px;
-  word-break: break-word; /* Forces long unbroken text to wrap */
-  white-space: normal;
 }
