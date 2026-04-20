@@ -308,3 +308,51 @@ input#cli::placeholder, input#chat-input::placeholder { color: var(--term-dim); 
   #side-tray { width: 100%; right: -100%; border-left: none; }
   .tesseract-container { display: none; } 
 }
+
+/* =========================================
+   HOLOGRAPHIC DATA TICKER (STOCK BOARD)
+   ========================================= */
+#data-ticker {
+  width: calc(100% + 50px); /* Stretches slightly past the padding */
+  margin-left: -25px; /* Pulls it flush with the edges */
+  margin-top: 20px;
+  margin-bottom: -25px; /* Pulls it flush with the bottom */
+  overflow: hidden;
+  background: rgba(0, 136, 255, 0.15);
+  border-top: 1px solid rgba(0, 255, 255, 0.4);
+  padding: 8px 0;
+  display: flex;
+  white-space: nowrap;
+  box-shadow: inset 0 0 15px rgba(0, 255, 255, 0.1);
+}
+
+.ticker-text {
+  display: inline-block;
+  white-space: nowrap;
+  /* Adjust the 25s here to make the ticker faster or slower */
+  animation: ticker-scroll 25s linear infinite;
+  font-family: var(--font-headers);
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: var(--term-gold);
+  letter-spacing: 3px;
+  text-shadow: 0 0 8px var(--term-gold);
+}
+
+.ticker-text span {
+  padding-right: 50px; /* Space between the repeating phrases */
+}
+
+/* Pause the ticker if they hover over it to read it */
+#data-ticker:hover .ticker-text {
+  animation-play-state: paused;
+  color: #fff;
+  text-shadow: 0 0 12px #fff;
+  cursor: crosshair;
+}
+
+@keyframes ticker-scroll {
+  0% { transform: translateX(0); }
+  /* Translates exactly 50% because we duplicated the span twice in the HTML */
+  100% { transform: translateX(-50%); } 
+}
