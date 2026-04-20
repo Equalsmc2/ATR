@@ -353,3 +353,82 @@ input#cli::placeholder, input#chat-input::placeholder { color: var(--term-dim); 
   #chat-wrapper { clip-path: none; border-radius: 4px; animation: none;}
   #side-tray { width: 100%; right: -100%; border-left: none; }
 }
+
+/* =========================================
+   4D HIGHER-DIMENSIONAL SHAPES (TESSERACT)
+   ========================================= */
+
+.tesseract-container {
+  width: 50px;
+  height: 50px;
+  perspective: 800px;
+  margin-left: 20px; /* Spaces it away from the header text */
+  margin-right: auto;
+}
+
+.tesseract {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  /* The chaotic rotation through 3D space */
+  animation: spin-4d 12s infinite linear;
+}
+
+.cube {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  transform-style: preserve-3d;
+}
+
+/* These animations create the 4D inversion illusion */
+.cube-outer { animation: pulse-outer 6s infinite ease-in-out; }
+.cube-inner { animation: pulse-inner 6s infinite ease-in-out; }
+
+.face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--term-text);
+  box-shadow: 0 0 8px var(--term-text), inset 0 0 8px var(--term-text);
+  background: rgba(0, 136, 255, 0.05); /* Very faint glass effect */
+}
+
+/* Positioning the 6 faces of the cube to form the wireframe */
+.front  { transform: translateZ(25px); }
+.back   { transform: rotateY(180deg) translateZ(25px); }
+.left   { transform: rotateY(-90deg) translateZ(25px); }
+.right  { transform: rotateY(90deg) translateZ(25px); }
+.top    { transform: rotateX(90deg) translateZ(25px); }
+.bottom { transform: rotateX(-90deg) translateZ(25px); }
+
+/* --- 4D Animations --- */
+@keyframes spin-4d {
+  0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+  100% { transform: rotateX(360deg) rotateY(720deg) rotateZ(360deg); }
+}
+
+@keyframes pulse-outer {
+  0%, 100% { 
+    transform: scale(1); 
+  }
+  50% { 
+    transform: scale(0.35); 
+    /* Shifts to cyan when it compresses into the "inner" dimension */
+    border-color: var(--term-gold); 
+    box-shadow: 0 0 15px var(--term-gold), inset 0 0 15px var(--term-gold);
+  }
+}
+
+@keyframes pulse-inner {
+  0%, 100% { 
+    transform: scale(0.35); 
+    border-color: var(--term-gold); 
+    box-shadow: 0 0 10px var(--term-gold);
+  }
+  50% { 
+    transform: scale(1); 
+    border-color: var(--term-text);
+  }
+}
