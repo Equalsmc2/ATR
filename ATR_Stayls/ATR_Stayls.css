@@ -33,6 +33,7 @@ body {
   top: 0; left: 0; width: 100vw; height: 100vh;
   z-index: 0;
   opacity: 0.6; 
+  pointer-events: none;
 }
 
 /* --- Spatial Grid & Matrix Background --- */
@@ -60,7 +61,7 @@ body {
 #main-interface {
   display: flex;
   width: 95vw;
-  max-width: 1400px;
+  max-width: 1500px;
   height: 90vh;
   gap: 25px;
   z-index: 10;
@@ -68,10 +69,9 @@ body {
 }
 
 /* --- Terminal Container --- */
-/* --- Terminal Container --- */
 #terminal-wrapper {
   flex: 2.2;
-  min-width: 0; /* THIS IS THE FIX: Prevents the ticker from stretching the screen */
+  min-width: 0; /* Prevents flexbox blowouts */
   position: relative;
   background: var(--term-bg);
   backdrop-filter: blur(12px); 
@@ -80,12 +80,13 @@ body {
   box-shadow: 0 0 40px rgba(0, 136, 255, 0.1), inset 0 0 30px rgba(0, 136, 255, 0.2);
   display: flex;
   flex-direction: column;
-  padding: 25px;
+  /* Extra bottom padding creates safe space for the absolute positioned ticker */
+  padding: 25px 25px 55px 25px; 
   clip-path: polygon(0 0, calc(100% - 30px) 0, 100% 30px, 100% 100%, 30px 100%, 0 calc(100% - 30px));
   animation: dimensional-float 12s ease-in-out infinite;
   transform-style: preserve-3d;
 }
-S
+
 header {
   display: flex;
   align-items: center;
@@ -132,7 +133,12 @@ h3 { font-size: 1.2rem; color: var(--term-gold); text-shadow: 0 0 8px var(--term
 #terminal::-webkit-scrollbar-track { background: rgba(0,0,0,0.5); }
 #terminal::-webkit-scrollbar-thumb { background: var(--term-gold); }
 
-.line { margin-bottom: 8px; line-height: 1.6; word-wrap: break-word; opacity: 0; transform: translateX(-10px); animation: fade-in-right 0.3s forwards; }
+/* Force all terminal lines to wrap cleanly */
+.line { 
+  margin-bottom: 8px; line-height: 1.6; 
+  word-wrap: break-word; overflow-wrap: break-word;
+  opacity: 0; transform: translateX(-10px); animation: fade-in-right 0.3s forwards; 
+}
 .line.system { color: var(--term-dim); border-left: 2px solid var(--term-dim); padding-left: 10px;}
 .line.error { color: var(--term-alert); text-shadow: 0 0 10px var(--term-alert); }
 .line.gold { color: var(--term-gold); font-family: var(--font-headers); letter-spacing: 1px; margin-top: 15px; border-bottom: 1px solid rgba(0, 255, 255, 0.3); padding-bottom: 5px;}
@@ -145,6 +151,7 @@ h3 { font-size: 1.2rem; color: var(--term-gold); text-shadow: 0 0 8px var(--term
   background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(0, 136, 255, 0.5); 
   padding: 15px; box-shadow: inset 0 0 20px rgba(0, 136, 255, 0.1);
   transition: all 0.3s ease;
+  min-width: 0; /* Prevents inputs from blowing out containers */
 }
 .input-line:focus-within, .chat-input-area:focus-within {
   border-color: var(--term-gold); box-shadow: inset 0 0 30px rgba(0, 255, 255, 0.2), 0 0 15px rgba(0, 255, 255, 0.3);
@@ -155,6 +162,7 @@ h3 { font-size: 1.2rem; color: var(--term-gold); text-shadow: 0 0 8px var(--term
 input#cli, input#chat-input {
   flex: 1; background: transparent; border: none; color: #fff;
   font-family: var(--font-code); font-size: 1.2rem; outline: none; transition: all 0.2s;
+  min-width: 0; width: 100%; /* Forces inputs to respect boundaries */
 }
 input#cli:focus, input#chat-input:focus { text-shadow: 0 0 10px var(--term-gold); letter-spacing: 1px;}
 input#cli::placeholder, input#chat-input::placeholder { color: var(--term-dim); }
@@ -162,6 +170,7 @@ input#cli::placeholder, input#chat-input::placeholder { color: var(--term-dim); 
 /* --- Chat Wrapper --- */
 #chat-wrapper {
   flex: 1;
+  min-width: 0;
   background: var(--term-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -199,6 +208,7 @@ input#cli::placeholder, input#chat-input::placeholder { color: var(--term-dim); 
   color: #fff; 
   margin-left: 8px;
   word-break: break-word;
+  overflow-wrap: break-word;
   white-space: normal;
 }
 
@@ -269,6 +279,7 @@ input#cli::placeholder, input#chat-input::placeholder { color: var(--term-dim); 
 /* --- 4D TESSERACT HYPERCUBE --- */
 .tesseract-container {
   width: 50px; height: 50px; perspective: 800px; margin: 0 30px; display: inline-block; z-index: 100;
+  pointer-events: none; /* Prevents it from blocking clicks on the header */
 }
 .tesseract {
   width: 100%; height: 100%; position: relative; transform-style: preserve-3d; animation: spin-4d 15s infinite linear;
@@ -310,34 +321,27 @@ input#cli::placeholder, input#chat-input::placeholder { color: var(--term-dim); 
 @keyframes dice-spin-1 { 0% { transform: rotateX(0deg) rotateY(0deg); } 100% { transform: rotateX(360deg) rotateY(180deg); } }
 @keyframes dice-spin-2 { 0% { transform: scale(0.7) rotateX(0deg) rotateZ(0deg); } 100% { transform: scale(0.7) rotateX(180deg) rotateZ(360deg); } }
 
-/* Responsive */
-@media (max-width: 768px) {
-  #main-interface { flex-direction: column; height: 100vh; width: 100vw; padding: 10px; }
-  #terminal-wrapper, #chat-wrapper { flex: 1.5; clip-path: none; border-radius: 4px; animation: none;}
-  #side-tray { width: 100%; right: -100%; border-left: none; }
-  .tesseract-container { display: none; } 
-}
-
 /* =========================================
    HOLOGRAPHIC DATA TICKER (STOCK BOARD)
    ========================================= */
 #data-ticker {
-  position: relative;
-  width: calc(100% + 50px); 
-  margin-left: -25px; 
-  margin-top: 20px;
-  margin-bottom: -25px; 
+  position: absolute; /* This prevents it from messing up flexbox entirely */
+  bottom: 0;
+  left: 0;
+  width: 100%; 
+  margin: 0;
   overflow: hidden;
-  background: rgba(0, 136, 255, 0.15);
+  background: rgba(0, 136, 255, 0.2);
   border-top: 1px solid rgba(0, 255, 255, 0.4);
   padding: 8px 0;
-  display: flex; /* Keeps the internal text in a row */
+  display: flex;
   box-shadow: inset 0 0 15px rgba(0, 255, 255, 0.1);
+  box-sizing: border-box;
 }
 
 .ticker-text {
   display: flex;
-  flex-shrink: 0; /* THIS IS THE MAGIC FIX: Forbids the text from squeezing/wrapping */
+  flex-shrink: 0; 
   white-space: nowrap;
   animation: ticker-scroll 25s linear infinite;
   font-family: var(--font-headers);
@@ -350,10 +354,9 @@ input#cli::placeholder, input#chat-input::placeholder { color: var(--term-dim); 
 
 .ticker-text span {
   padding-right: 50px; 
-  white-space: nowrap; /* Double-enforces that it stays on one line */
+  white-space: nowrap; 
 }
 
-/* Pause the ticker if they hover over it to read it */
 #data-ticker:hover .ticker-text {
   animation-play-state: paused;
   color: #fff;
@@ -364,4 +367,12 @@ input#cli::placeholder, input#chat-input::placeholder { color: var(--term-dim); 
 @keyframes ticker-scroll {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); } 
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  #main-interface { flex-direction: column; height: auto; width: 100vw; padding: 10px; }
+  #terminal-wrapper, #chat-wrapper { flex: none; height: 50vh; clip-path: none; border-radius: 4px; animation: none; transform: none !important;}
+  #side-tray { width: 100%; right: -100%; border-left: none; }
+  .tesseract-container { display: none; } 
 }
