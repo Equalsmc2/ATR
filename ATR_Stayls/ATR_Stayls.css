@@ -1,10 +1,10 @@
-/* --- Core Variables: Reality Matrix (Azure) --- */
+/* --- Core Variables: Reality Matrix (True Azure) --- */
 :root {
-  --term-bg: rgba(5, 5, 20, 0.85); /* Deep void blue */
-  --term-text: #00ffff; /* Bright Azure / Cyan */
-  --term-dim: #0077aa; /* Dimmer blue */
+  --term-bg: rgba(5, 5, 25, 0.85); /* Deep void blue/purple */
+  --term-text: #00aaff; /* True Electric Azure Blue */
+  --term-dim: #004488; /* Deep spatial blue */
   --term-alert: #ff0055; /* Sharp synthetic red */
-  --term-gold: #00ffcc; /* Minty cyan for highlights */
+  --term-gold: #88ccff; /* Icy blue for highlights (No more mint!) */
   
   --font-headers: 'Orbitron', sans-serif;
   --font-code: 'Fira Code', monospace;
@@ -31,8 +31,8 @@ body {
   position: fixed;
   top: 0; left: 0; width: 100vw; height: 100vh;
   background-image: 
-    linear-gradient(rgba(0, 255, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 255, 255, 0.05) 1px, transparent 1px);
+    linear-gradient(rgba(0, 170, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 170, 255, 0.08) 1px, transparent 1px);
   background-size: 40px 40px;
   background-position: center center;
   z-index: 1;
@@ -71,7 +71,7 @@ body {
   background: var(--term-bg);
   backdrop-filter: blur(8px);
   border: 1px solid var(--term-dim);
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.1), inset 0 0 30px rgba(0, 255, 255, 0.05);
+  box-shadow: 0 0 20px rgba(0, 170, 255, 0.15), inset 0 0 30px rgba(0, 170, 255, 0.1);
   display: flex;
   flex-direction: column;
   padding: 20px;
@@ -93,10 +93,10 @@ h2, h3 {
   font-family: var(--font-headers);
   text-transform: uppercase;
   letter-spacing: 2px;
-  text-shadow: 0 0 8px var(--term-dim); 
+  text-shadow: 0 0 10px var(--term-text); 
 }
 h2 { font-size: 1.8rem; font-weight: 900;}
-h3 { font-size: 1.2rem; color: var(--term-gold); }
+h3 { font-size: 1.2rem; color: var(--term-gold); text-shadow: 0 0 8px var(--term-gold);}
 
 #system-clock {
   color: var(--term-gold);
@@ -108,7 +108,7 @@ h3 { font-size: 1.2rem; color: var(--term-gold); }
 }
 
 #tools-toggle {
-  background: rgba(0, 255, 255, 0.1);
+  background: rgba(0, 170, 255, 0.1);
   color: var(--term-text);
   border: 1px solid var(--term-text);
   font-family: var(--font-headers);
@@ -142,15 +142,15 @@ h3 { font-size: 1.2rem; color: var(--term-gold); }
 .line { margin-bottom: 8px; line-height: 1.5; word-wrap: break-word; }
 .line.system { color: var(--term-dim); border-left: 2px solid var(--term-dim); padding-left: 10px;}
 .line.error { color: var(--term-alert); text-shadow: 0 0 5px var(--term-alert); }
-.line.gold { color: var(--term-gold); font-family: var(--font-headers); letter-spacing: 1px; margin-top: 15px; border-bottom: 1px solid rgba(0,255,204,0.3); padding-bottom: 5px;}
-.line.user { color: #fff; }
+.line.gold { color: var(--term-gold); font-family: var(--font-headers); letter-spacing: 1px; margin-top: 15px; border-bottom: 1px solid rgba(136, 204, 255, 0.3); padding-bottom: 5px;}
+.line.user { color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.3); }
 .timestamp { color: var(--term-dim); font-size: 0.85em; margin-right: 10px; }
 
 /* --- Input Areas --- */
 .input-line, .chat-input-area { 
   display: flex; 
   align-items: center; 
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.5);
   border: 1px solid var(--term-dim); 
   padding: 12px; 
 }
@@ -172,7 +172,7 @@ input#cli::placeholder, input#chat-input::placeholder { color: var(--term-dim); 
   display: flex;
   flex-direction: column;
   padding: 20px;
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.05);
+  box-shadow: 0 0 20px rgba(0, 170, 255, 0.08);
   clip-path: polygon(20px 0, 100% 0, 100% 100%, 0 100%, 0 20px);
 }
 
@@ -182,7 +182,6 @@ input#cli::placeholder, input#chat-input::placeholder { color: var(--term-dim); 
   width: 12px; height: 12px;
   background: var(--term-text);
   box-shadow: 0 0 10px var(--term-text);
-  /* Square pulse for digital feel */
   animation: blink 1.5s steps(2, start) infinite;
 }
 
@@ -197,7 +196,7 @@ input#cli::placeholder, input#chat-input::placeholder { color: var(--term-dim); 
   flex-direction: column-reverse;
 }
 
-.chat-msg { margin-bottom: 12px; background: rgba(0, 255, 255, 0.05); padding: 10px; border-left: 2px solid var(--term-gold); }
+.chat-msg { margin-bottom: 12px; background: rgba(0, 170, 255, 0.08); padding: 10px; border-left: 2px solid var(--term-gold); }
 .chat-msg .user { color: var(--term-gold); font-family: var(--font-headers); font-size: 0.9rem;}
 .chat-msg .text { color: #fff; margin-left: 8px;}
 
@@ -212,7 +211,7 @@ input#cli::placeholder, input#chat-input::placeholder { color: var(--term-dim); 
   border-left: 1px solid var(--term-text);
   z-index: 20;
   padding: 25px;
-  box-shadow: -10px 0 30px rgba(0, 255, 255, 0.1);
+  box-shadow: -10px 0 30px rgba(0, 170, 255, 0.15);
   transition: right 0.4s cubic-bezier(0.1, 0.9, 0.2, 1);
   display: flex;
   flex-direction: column;
@@ -231,7 +230,7 @@ input#cli::placeholder, input#chat-input::placeholder { color: var(--term-dim); 
 .tool-section { margin-bottom: 30px; }
 .tool-section h4 { margin: 0 0 15px 0; color: var(--term-dim); font-family: var(--font-headers); letter-spacing: 1px;}
 
-.divider { border: 0; border-top: 1px solid rgba(0, 255, 255, 0.2); margin: 25px 0; }
+.divider { border: 0; border-top: 1px solid rgba(0, 170, 255, 0.2); margin: 25px 0; }
 
 /* Dice Styles */
 #dice-display {
@@ -241,11 +240,11 @@ input#cli::placeholder, input#chat-input::placeholder { color: var(--term-dim); 
 }
 .dice-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 .dice-grid button {
-  background: rgba(0, 255, 255, 0.05); border: 1px solid var(--term-dim); color: var(--term-text);
+  background: rgba(0, 170, 255, 0.05); border: 1px solid var(--term-dim); color: var(--term-text);
   font-family: var(--font-code); padding: 10px 5px; cursor: pointer; font-size: 1.1rem;
   transition: all 0.2s;
 }
-.dice-grid button:hover { background: rgba(0, 255, 255, 0.2); border-color: var(--term-text); box-shadow: 0 0 10px rgba(0,255,255,0.4); }
+.dice-grid button:hover { background: rgba(0, 170, 255, 0.2); border-color: var(--term-text); box-shadow: 0 0 10px rgba(0, 170, 255, 0.4); }
 
 /* Calculator Styles */
 #calc-screen {
@@ -259,11 +258,11 @@ input#cli::placeholder, input#chat-input::placeholder { color: var(--term-dim); 
   background: rgba(0,0,0,0.3); border: 1px solid var(--term-dim); color: #fff;
   transition: all 0.2s;
 }
-.calc-grid button:hover { background: rgba(0, 255, 255, 0.1); border-color: var(--term-text); }
-.calc-grid .op { color: var(--term-gold); background: rgba(0, 255, 204, 0.05); }
+.calc-grid button:hover { background: rgba(0, 170, 255, 0.15); border-color: var(--term-text); }
+.calc-grid .op { color: var(--term-gold); background: rgba(136, 204, 255, 0.05); }
 .calc-grid .clear { color: var(--term-alert); border-color: rgba(255, 0, 85, 0.5); }
 .calc-grid .clear:hover { background: rgba(255, 0, 85, 0.1); border-color: var(--term-alert); box-shadow: 0 0 10px rgba(255,0,85,0.3);}
-.calc-grid .equal { background: rgba(0, 255, 255, 0.2); color: var(--term-text); border-color: var(--term-text); }
+.calc-grid .equal { background: rgba(0, 170, 255, 0.2); color: var(--term-text); border-color: var(--term-text); }
 .calc-grid .equal:hover { background: var(--term-text); color: #000; box-shadow: 0 0 15px var(--term-text);}
 
 /* --- Responsive Design --- */
