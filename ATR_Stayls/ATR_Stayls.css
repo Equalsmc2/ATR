@@ -68,8 +68,10 @@ body {
 }
 
 /* --- Terminal Container --- */
+/* --- Terminal Container --- */
 #terminal-wrapper {
   flex: 2.2;
+  min-width: 0; /* THIS IS THE FIX: Prevents the ticker from stretching the screen */
   position: relative;
   background: var(--term-bg);
   backdrop-filter: blur(12px); 
@@ -83,7 +85,7 @@ body {
   animation: dimensional-float 12s ease-in-out infinite;
   transform-style: preserve-3d;
 }
-
+S
 header {
   display: flex;
   align-items: center;
