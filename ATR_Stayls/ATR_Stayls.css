@@ -1,10 +1,10 @@
 /* --- Core Variables: Reality Matrix (True Azure) --- */
 :root {
-  --term-bg: rgba(5, 5, 20, 0.85); /* Deep void blue */
-  --term-text: #0088ff; /* Pure Electric Azure Blue */
-  --term-dim: #0033cc; /* Deep spatial blue */
-  --term-alert: #ff0055; /* Sharp synthetic red */
-  --term-gold: #00ffff; /* Pure Cyan highlights */
+  --term-bg: rgba(5, 5, 20, 0.85);
+  --term-text: #0088ff;
+  --term-dim: #0033cc;
+  --term-alert: #ff0055;
+  --term-gold: #00ffff;
   
   --font-headers: 'Orbitron', sans-serif;
   --font-code: 'Fira Code', monospace;
@@ -24,50 +24,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Adds a subtle CRT monitor glow to the whole screen */
   text-shadow: 0 0 4px rgba(0, 136, 255, 0.4); 
 }
-
-/* --- ANIMATIONS: The Geometry of Reality --- */
-
-/* 1. Quantum Parallax Grid: Two grids moving at different speeds for 3D depth */
-@keyframes grid-drift-front {
-  0% { background-position: 0px 0px; }
-  100% { background-position: 40px 40px; }
-}
-@keyframes grid-drift-back {
-  0% { background-position: 0px 0px; }
-  100% { background-position: -20px -20px; }
-}
-
-/* 2. Dimensional Float: Shifts elements in 3D perspective, like a hologram */
-@keyframes dimensional-float {
-  0%   { transform: perspective(1500px) rotateX(1deg) rotateY(-1deg) translateZ(0px); }
-  50%  { transform: perspective(1500px) rotateX(-1deg) rotateY(1deg) translateZ(10px); }
-  100% { transform: perspective(1500px) rotateX(1deg) rotateY(-1deg) translateZ(0px); }
-}
-
-/* 3. Data Glitch: A sharp, sudden split in text shadow to simulate compiling errors */
-@keyframes glitch-shift {
-  0%, 96%, 98%, 100% { text-shadow: 0 0 10px var(--term-text); transform: translate(0, 0); }
-  97% { text-shadow: 3px 0 var(--term-alert), -3px 0 var(--term-gold); transform: translate(-2px, 1px); }
-  99% { text-shadow: -3px 0 var(--term-alert), 3px 0 var(--term-gold); transform: translate(2px, -1px); }
-}
-
-/* 4. Matrix Scanline: A slow glowing bar sweeping down the screen */
-@keyframes scanline-sweep {
-  0% { top: -10%; opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { top: 110%; opacity: 0; }
-}
-
 
 /* --- Spatial Grid & Matrix Background --- */
 #spatial-grid {
   position: fixed;
   top: 0; left: 0; width: 100vw; height: 100vh;
-  /* Front Grid */
   background-image: 
     linear-gradient(rgba(0, 255, 255, 0.08) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 255, 255, 0.08) 1px, transparent 1px);
@@ -81,7 +44,6 @@ body {
   content: "";
   position: absolute;
   top: 0; left: 0; width: 100%; height: 100%;
-  /* Back Grid (Smaller, slower) */
   background-image: 
     linear-gradient(rgba(0, 136, 255, 0.04) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 136, 255, 0.04) 1px, transparent 1px);
@@ -97,7 +59,6 @@ body {
   pointer-events: none;
 }
 
-/* The Holographic Scanline */
 #matrix-overlay::before {
   content: "";
   position: absolute;
@@ -115,7 +76,7 @@ body {
   height: 90vh;
   gap: 25px;
   z-index: 10;
-  perspective: 2000px; /* Enables 3D space for children */
+  perspective: 2000px;
 }
 
 /* --- Terminal Container --- */
@@ -130,8 +91,6 @@ body {
   flex-direction: column;
   padding: 25px;
   clip-path: polygon(0 0, calc(100% - 25px) 0, 100% 25px, 100% 100%, 25px 100%, 0 calc(100% - 25px));
-  
-  /* Applying the holographic float */
   animation: dimensional-float 12s ease-in-out infinite;
   transform-style: preserve-3d;
 }
@@ -154,7 +113,7 @@ h2, h3 {
 h2 { 
   font-size: 1.8rem; 
   font-weight: 900;
-  animation: glitch-shift 4s infinite; /* Applying the glitch */
+  animation: glitch-shift 4s infinite;
 }
 h3 { font-size: 1.2rem; color: var(--term-gold); text-shadow: 0 0 8px var(--term-gold);}
 
@@ -236,8 +195,6 @@ input#cli::placeholder, input#chat-input::placeholder { color: var(--term-dim); 
   padding: 25px;
   box-shadow: 0 0 25px rgba(0, 136, 255, 0.1), inset 0 0 20px rgba(0, 136, 255, 0.05);
   clip-path: polygon(25px 0, 100% 0, 100% 100%, 0 100%, 0 25px);
-  
-  /* Reverse float so it moves opposite to the main terminal */
   animation: dimensional-float 15s ease-in-out infinite reverse;
   transform-style: preserve-3d;
 }
@@ -248,11 +205,8 @@ input#cli::placeholder, input#chat-input::placeholder { color: var(--term-dim); 
   width: 12px; height: 12px;
   background: var(--term-text);
   box-shadow: 0 0 12px var(--term-text);
-  /* Sharp synthetic square pulse */
   animation: blink 1.5s steps(2, start) infinite;
 }
-
-@keyframes blink { 0% { opacity: 1; } 100% { opacity: 0; } }
 
 #chat-messages {
   flex: 1;
@@ -284,7 +238,6 @@ input#cli::placeholder, input#chat-input::placeholder { color: var(--term-dim); 
   z-index: 20;
   padding: 30px;
   box-shadow: -15px 0 40px rgba(0, 136, 255, 0.15);
-  /* Sharp mechanical slide in */
   transition: right 0.4s cubic-bezier(0.1, 0.9, 0.2, 1);
   display: flex;
   flex-direction: column;
@@ -305,25 +258,70 @@ input#cli::placeholder, input#chat-input::placeholder { color: var(--term-dim); 
 
 .divider { border: 0; border-top: 1px solid rgba(0, 255, 255, 0.2); margin: 30px 0; }
 
-/* Dimensional Dice Styles */
+/* =========================================
+   4D DICE BUTTONS (HYPER-SHAPES)
+   ========================================= */
 #dice-display {
   font-size: 1.2rem; text-align: center; margin-bottom: 20px;
   background: rgba(0,0,0,0.6); padding: 15px; border: 1px solid var(--term-dim); color: #fff;
   font-family: var(--font-headers); letter-spacing: 2px;
   box-shadow: inset 0 0 15px rgba(0, 136, 255, 0.2);
 }
-.dice-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+.dice-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 20px; }
+
 .dice-grid button {
-  background: rgba(0, 136, 255, 0.05); border: 1px solid var(--term-dim); color: var(--term-text);
-  font-family: var(--font-code); padding: 12px 5px; cursor: pointer; font-size: 1.1rem;
-  transition: all 0.2s;
-  /* Hexagon styling for a more geometric feel */
-  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  position: relative;
+  background: transparent;
+  border: none;
+  color: var(--term-text);
+  font-family: var(--font-code);
+  padding: 15px 5px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: bold;
+  transform-style: preserve-3d;
+  perspective: 400px;
 }
-.dice-grid button:hover { 
-  background: rgba(0, 255, 255, 0.2); border-color: var(--term-gold); 
-  color: #fff; box-shadow: 0 0 15px rgba(0, 255, 255, 0.5); 
-  transform: scale(1.1);
+
+/* Inner Text styling so it stays above the wireframes */
+.dice-grid button::first-letter {
+  position: relative;
+  z-index: 5;
+}
+
+/* 4D Wireframes */
+.dice-grid button::before, .dice-grid button::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  border: 1px solid var(--term-dim);
+  box-sizing: border-box;
+  pointer-events: none; /* Let clicks pass through */
+  transition: all 0.2s;
+}
+
+/* Outer Wireframe Spin */
+.dice-grid button::before {
+  animation: dice-spin-1 6s infinite linear;
+}
+
+/* Inner Wireframe Spin (Reverse & Scaled) */
+.dice-grid button::after {
+  border-color: var(--term-gold);
+  transform: scale(0.7);
+  animation: dice-spin-2 8s infinite linear;
+}
+
+.dice-grid button:hover {
+  color: #fff;
+  text-shadow: 0 0 8px #fff;
+}
+
+.dice-grid button:hover::before, .dice-grid button:hover::after {
+  border-color: var(--term-text);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.6), inset 0 0 10px rgba(0, 255, 255, 0.4);
+  animation-duration: 2s; /* Speed up the 4D spin on hover! */
 }
 
 /* Calculator Styles */
@@ -346,24 +344,18 @@ input#cli::placeholder, input#chat-input::placeholder { color: var(--term-dim); 
 .calc-grid .equal { background: rgba(0, 136, 255, 0.2); color: var(--term-text); border-color: var(--term-text); }
 .calc-grid .equal:hover { background: var(--term-text); color: #000; box-shadow: 0 0 20px var(--term-text);}
 
-/* --- Responsive Design --- */
-@media (max-width: 768px) {
-  #main-interface { flex-direction: column; height: 100vh; width: 100vw; padding: 10px; box-sizing: border-box;}
-  #terminal-wrapper { flex: 1.5; clip-path: none; border-radius: 4px; animation: none;}
-  #chat-wrapper { clip-path: none; border-radius: 4px; animation: none;}
-  #side-tray { width: 100%; right: -100%; border-left: none; }
-}
 
 /* =========================================
    4D HIGHER-DIMENSIONAL SHAPES (TESSERACT)
    ========================================= */
 
 .tesseract-container {
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   perspective: 800px;
-  margin-left: 20px; /* Spaces it away from the header text */
-  margin-right: auto;
+  margin: 0 30px; /* Force spacing in the header */
+  display: inline-block;
+  z-index: 100;
 }
 
 .tesseract {
@@ -371,7 +363,6 @@ input#cli::placeholder, input#chat-input::placeholder { color: var(--term-dim); 
   height: 100%;
   position: relative;
   transform-style: preserve-3d;
-  /* The chaotic rotation through 3D space */
   animation: spin-4d 12s infinite linear;
 }
 
@@ -382,45 +373,68 @@ input#cli::placeholder, input#chat-input::placeholder { color: var(--term-dim); 
   transform-style: preserve-3d;
 }
 
-/* These animations create the 4D inversion illusion */
 .cube-outer { animation: pulse-outer 6s infinite ease-in-out; }
 .cube-inner { animation: pulse-inner 6s infinite ease-in-out; }
 
 .face {
   position: absolute;
-  width: 100%;
-  height: 100%;
+  width: 40px;
+  height: 40px;
   border: 1px solid var(--term-text);
   box-shadow: 0 0 8px var(--term-text), inset 0 0 8px var(--term-text);
-  background: rgba(0, 136, 255, 0.05); /* Very faint glass effect */
+  background: rgba(0, 136, 255, 0.05);
 }
 
-/* Positioning the 6 faces of the cube to form the wireframe */
-.front  { transform: translateZ(25px); }
-.back   { transform: rotateY(180deg) translateZ(25px); }
-.left   { transform: rotateY(-90deg) translateZ(25px); }
-.right  { transform: rotateY(90deg) translateZ(25px); }
-.top    { transform: rotateX(90deg) translateZ(25px); }
-.bottom { transform: rotateX(-90deg) translateZ(25px); }
+.front  { transform: translateZ(20px); }
+.back   { transform: rotateY(180deg) translateZ(20px); }
+.left   { transform: rotateY(-90deg) translateZ(20px); }
+.right  { transform: rotateY(90deg) translateZ(20px); }
+.top    { transform: rotateX(90deg) translateZ(20px); }
+.bottom { transform: rotateX(-90deg) translateZ(20px); }
 
-/* --- 4D Animations --- */
+/* --- All Global Keyframes --- */
+
+@keyframes grid-drift-front {
+  0% { background-position: 0px 0px; }
+  100% { background-position: 40px 40px; }
+}
+@keyframes grid-drift-back {
+  0% { background-position: 0px 0px; }
+  100% { background-position: -20px -20px; }
+}
+@keyframes dimensional-float {
+  0%   { transform: perspective(1500px) rotateX(1deg) rotateY(-1deg) translateZ(0px); }
+  50%  { transform: perspective(1500px) rotateX(-1deg) rotateY(1deg) translateZ(10px); }
+  100% { transform: perspective(1500px) rotateX(1deg) rotateY(-1deg) translateZ(0px); }
+}
+@keyframes glitch-shift {
+  0%, 96%, 98%, 100% { text-shadow: 0 0 10px var(--term-text); transform: translate(0, 0); }
+  97% { text-shadow: 3px 0 var(--term-alert), -3px 0 var(--term-gold); transform: translate(-2px, 1px); }
+  99% { text-shadow: -3px 0 var(--term-alert), 3px 0 var(--term-gold); transform: translate(2px, -1px); }
+}
+@keyframes scanline-sweep {
+  0% { top: -10%; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { top: 110%; opacity: 0; }
+}
+@keyframes blink { 
+  0% { opacity: 1; } 100% { opacity: 0; } 
+}
 @keyframes spin-4d {
   0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
   100% { transform: rotateX(360deg) rotateY(720deg) rotateZ(360deg); }
 }
-
 @keyframes pulse-outer {
   0%, 100% { 
     transform: scale(1); 
   }
   50% { 
     transform: scale(0.35); 
-    /* Shifts to cyan when it compresses into the "inner" dimension */
     border-color: var(--term-gold); 
     box-shadow: 0 0 15px var(--term-gold), inset 0 0 15px var(--term-gold);
   }
 }
-
 @keyframes pulse-inner {
   0%, 100% { 
     transform: scale(0.35); 
@@ -431,4 +445,21 @@ input#cli::placeholder, input#chat-input::placeholder { color: var(--term-dim); 
     transform: scale(1); 
     border-color: var(--term-text);
   }
+}
+@keyframes dice-spin-1 {
+  0% { transform: rotateX(0deg) rotateY(0deg); }
+  100% { transform: rotateX(360deg) rotateY(180deg); }
+}
+@keyframes dice-spin-2 {
+  0% { transform: scale(0.7) rotateX(0deg) rotateZ(0deg); }
+  100% { transform: scale(0.7) rotateX(180deg) rotateZ(360deg); }
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 768px) {
+  #main-interface { flex-direction: column; height: 100vh; width: 100vw; padding: 10px; box-sizing: border-box;}
+  #terminal-wrapper { flex: 1.5; clip-path: none; border-radius: 4px; animation: none;}
+  #chat-wrapper { clip-path: none; border-radius: 4px; animation: none;}
+  #side-tray { width: 100%; right: -100%; border-left: none; }
+  .tesseract-container { display: none; } /* Hide on small mobile to save space */
 }
