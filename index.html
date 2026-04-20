@@ -3,57 +3,58 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>∞ Arcane Terminal</title>
+  <title>REALITY ENGINE // AZURE</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="ATR_Stayls/ATR_Stayls.css"/>
 </head>
 <body>
   
-  <div id="static-overlay"></div>
-  <div id="scanline"></div>
+  <div id="spatial-grid"></div>
+  <div id="matrix-overlay"></div>
 
   <div id="main-interface">
     <div id="terminal-wrapper">
       <header>
-        <h2>🧮 Arcane Terminal</h2>
+        <h2>REALITY MATRIX // AZURE</h2>
         <div id="system-clock">--:--:--</div>
-        <button id="tools-toggle">🛠️ TOOLS</button>
+        <button id="tools-toggle">[ SPATIAL TOOLS ]</button>
       </header>
       
       <div id="terminal">
-        <div class="line system">Initializing Archive Protocol...</div>
+        <div class="line system">Compiling foundational reality scripts...</div>
       </div>
       
       <div class="input-line">
-        <span class="prompt">CMD></span>
-        <input id="cli" type="text" autocomplete="off" placeholder="Enter command..." autofocus />
+        <span class="prompt">EXEC></span>
+        <input id="cli" type="text" autocomplete="off" placeholder="Inject parameter..." autofocus />
       </div>
     </div>
 
     <div id="chat-wrapper">
       <header>
-        <h3>📡 LIVE_RELAY</h3>
+        <h3>QUANTUM_ENTANGLEMENT</h3>
         <span class="status-pulse"></span>
       </header>
       <div id="chat-messages"></div>
       <div class="chat-input-area">
-        <span class="prompt">MSG></span>
-        <input id="chat-input" type="text" placeholder="Transmit message..." autocomplete="off" />
+        <span class="prompt">SYNC></span>
+        <input id="chat-input" type="text" placeholder="Transmit telemetry..." autocomplete="off" />
       </div>
     </div>
   </div>
 
   <aside id="side-tray">
     <div class="tray-header">
-      <h3>GAME TOOLS</h3>
+      <h3>DIMENSIONAL TOOLS</h3>
       <button id="tray-close">✖</button>
     </div>
 
     <div class="tool-section">
-      <h4>🎲 DICE ROLLER</h4>
-      <div id="dice-display">Rate: --</div>
+      <h4>PROBABILITY VECTORS</h4>
+      <div id="dice-display">OUTCOME: --</div>
       <div class="dice-grid">
         <button onclick="roll(4)">d4</button>
         <button onclick="roll(6)">d6</button>
@@ -68,7 +69,7 @@
     <hr class="divider">
 
     <div class="tool-section">
-      <h4>🔢 CALCULATOR</h4>
+      <h4>ALGORITHMIC COMPUTE</h4>
       <div id="calc-screen">0</div>
       <div class="calc-grid">
         <button onclick="calc('7')">7</button>
