@@ -463,3 +463,58 @@ input#cli::placeholder, input#chat-input::placeholder { color: var(--term-dim); 
   #side-tray { width: 100%; right: -100%; border-left: none; }
   .tesseract-container { display: none; } /* Hide on small mobile to save space */
 }
+
+/* =========================================
+   REACTIVE INTERFACE OVERRIDES
+   ========================================= */
+
+/* 1. Terminal Line Reveal Animation */
+.line {
+  opacity: 0;
+  transform: translateX(-15px) skewX(10deg);
+  animation: data-stream-in 0.3s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+}
+
+@keyframes data-stream-in {
+  100% { opacity: 1; transform: translateX(0) skewX(0deg); }
+}
+
+/* 2. Aggressive Hyper-Tactile Button Hovers */
+#tools-toggle {
+  transition: all 0.15s ease-out;
+}
+#tools-toggle:hover { 
+  background: var(--term-text); 
+  color: #000; 
+  /* Skews the button and casts a hard digital shadow */
+  transform: scale(1.05) skewX(-15deg);
+  box-shadow: -6px 6px 0px rgba(0, 51, 204, 0.8), 0 0 25px var(--term-text); 
+}
+#tools-toggle:active {
+  transform: scale(0.95) skewX(-15deg) translate(-3px, 3px);
+  box-shadow: -2px 2px 0px rgba(0, 51, 204, 0.8), 0 0 10px var(--term-text);
+}
+
+.dice-grid button:hover {
+  transform: scale(1.15) rotate(5deg);
+  border-color: var(--term-gold);
+  z-index: 10;
+}
+.dice-grid button:active {
+  transform: scale(0.9) rotate(-5deg);
+}
+
+/* 3. Input Focus Reactivity */
+.input-line, .chat-input-area {
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.input-line:focus-within, .chat-input-area:focus-within {
+  border-color: var(--term-gold);
+  box-shadow: inset 0 0 30px rgba(0, 255, 255, 0.15), 0 0 15px rgba(0, 136, 255, 0.2);
+}
+
+input#cli:focus, input#chat-input:focus {
+  text-shadow: 0 0 8px var(--term-gold);
+  letter-spacing: 1px; /* Text slightly expands when typing */
+  transition: letter-spacing 0.2s ease, text-shadow 0.2s ease;
+}
